@@ -17,5 +17,9 @@ export default defineConfig({
       'import.meta.env.VITE_API_KEY': JSON.stringify(env.VITE_API_KEY || ''),
       'import.meta.env.VITE_GA_TRACKING_ID': JSON.stringify(env.VITE_GA_TRACKING_ID || ''),
     },
+    preview: {
+      allowedHosts: ['theoldsiam.co.th', 'www.theoldsiam.co.th', 'localhost', '127.0.0.1']
+    }
   },
+
 });
