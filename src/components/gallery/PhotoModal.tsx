@@ -452,9 +452,9 @@ export function PhotoModal({
             <X className="w-5 h-5" />
           </motion.button>
 
-          <div className="flex flex-col-reverse lg:flex-row h-full max-h-[calc(100vh-50px)] relative overflow-y-scroll">
-            {/* Image Section */}
-            <div className="lg:w-1/2 bg-gray-50 p-4 h-fit row-start-2 lg:row-start-1">
+          <div className="flex flex-col lg:flex-row h-full max-h-[calc(100vh-50px)] overflow-y-auto">
+            {/* Image Section - ย้ายมาด้านบนในมือถือ */}
+            <div className="lg:w-1/2 bg-gray-50 p-4 flex-shrink-0">
               <ImageCarousel
                 images={photo.gallery || []}
                 selectedIndex={selectedImageIndex}
@@ -464,13 +464,15 @@ export function PhotoModal({
               />
             </div>
 
-            {/* Details Section */}
-            <div className="lg:w-1/2 p-4 sm:p-6 bg-white flex flex-col space-y-4 h-full">
-              <div className="lg:mb-4">
-                <h3 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">
+            {/* Details Section - เพิ่ม overflow-y-auto เฉพาะส่วนนี้ */}
+            <div className="lg:w-1/2 p-4 sm:p-6 bg-white flex flex-col-reverse lg:flex-col  space-y-4 ">
+              <div className="lg:mb-4 ">
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2 hidden lg:block">
                   {photo.title}
                 </h3>
-                <p className="text-gray-600 mb-3">{photo.category}</p>
+                <p className="text-gray-600 mb-3 hidden lg:block">
+                  {photo.category}
+                </p>
                 {!showVoteForm && (
                   <p className="text-sm text-gray-500 leading-relaxed whitespace-pre-line">
                     {photo.description || "ไม่มีรายละเอียด"}
@@ -484,11 +486,13 @@ export function PhotoModal({
               {!showVoteForm ? (
                 <div className="space-y-3 mb-4">
                   <VoteButton />
-                  <div className="text-sm text-gray-500">
-                    <span>
-                      คุณไม่สามารถโหวตได้อีกเนื่องจากมีการโหวตภาพอื่นไปแล้ว
-                    </span>
-                  </div>
+                  {isVoted && (
+                    <div className="text-sm text-gray-500">
+                      <span>
+                        คุณไม่สามารถโหวตได้อีกเนื่องจากมีการโหวตภาพอื่นไปแล้ว
+                      </span>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <VoteForm
@@ -499,6 +503,13 @@ export function PhotoModal({
                   isSubmitting={isSubmitting}
                 />
               )}
+
+              <div className="lg:mb-4 lg:hidden">
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">
+                  {photo.title}
+                </h3>
+                <p className="text-gray-600 mb-3">{photo.category}</p>
+              </div>
             </div>
           </div>
         </motion.div>
