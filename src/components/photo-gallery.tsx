@@ -198,8 +198,11 @@ const PhotoGallery = () => {
 
   return (
     <>
-      <div className="flex flex-col gap-4 items-center justify-center mb-4 -mt-2">
+      <div className="flex flex-col gap-2 items-center justify-center mb-4 -mt-2">
         <GalleryHeader deviceType="desktop" />
+        {hasVoted && isInitialized && (
+          <p className="text-yellow-400/80  text-sm">คลิกที่รูปภาพเพื่อโหวต</p>
+        )}
       </div>
 
       <motion.div
@@ -250,12 +253,6 @@ const PhotoGallery = () => {
               </span>
             </div>
           </div>
-
-          {!hasVoted && isInitialized && (
-            <p className="text-yellow-400 mt-2 text-sm">
-              Click on a photo to vote
-            </p>
-          )}
         </div>
       </div>
 

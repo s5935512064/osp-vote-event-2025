@@ -2,8 +2,9 @@
 import '@/styles/global.css'
 import '@fontsource/permanent-marker';
 import '@fontsource/prompt';
-import OGP_IMAGE from '@/assets/cover-og.jpg';
+
 const GA_TRACKING_ID = import.meta.env.VITE_GA_TRACKING_ID;
+
 ---
 
 <!doctype html>
@@ -13,22 +14,16 @@ const GA_TRACKING_ID = import.meta.env.VITE_GA_TRACKING_ID;
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.ico" />
 
-		{GA_TRACKING_ID && (
-			<>
-				<script async src={`https://www.googletagmanager.com/gtag/js?id=${GA_TRACKING_ID}`}></script>
-				<script is:inline define:vars={{ GA_TRACKING_ID }}>
-					window.dataLayer = window.dataLayer || [];
-					function gtag(){dataLayer.push(arguments);}
-					gtag('js', new Date());
-					gtag('config', GA_TRACKING_ID, {
-						page_title: 'We\'re Proud of You | The Old Siam Plaza',
-						custom_map: {
-							'custom_parameter_1': 'vote_event_2025'
-						}
-					});
-				</script>
-			</>
-		)}
+		<script async src={`https://www.googletagmanager.com/gtag/js?id=${GA_TRACKING_ID}`}></script>
+		<script define:vars={{ GA_TRACKING_ID }}>
+		  window.dataLayer = window.dataLayer || [];
+		  function gtag(){dataLayer.push(arguments);}
+		  gtag('js', new Date());
+		
+		  gtag('config', GA_TRACKING_ID, {
+			page_path: '/event/2025/pride-month-vote',
+		  });
+		</script>
 
 		<meta name="generator" content={Astro.generator} />
 		<title>We're Proud of You | The Old Siam Plaza</title>

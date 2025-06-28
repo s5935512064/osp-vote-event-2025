@@ -1,4 +1,3 @@
-import React from "react";
 import { Button } from "@/components/ui/button";
 import { SparklesText } from "../magicui/sparkles-text";
 import {
@@ -10,7 +9,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { RULES_LIST } from "./constants";
-import type { DeviceType, LayoutMode, CampaignDataResponse } from "./types";
+import type { DeviceType } from "./types";
 
 interface GalleryHeaderProps {
   deviceType: DeviceType;
@@ -26,7 +25,8 @@ export function GalleryHeader({ deviceType }: GalleryHeaderProps) {
           {campaignName}
         </SparklesText>
         <p className="text-center text-sm md:text-base font-prompt max-w-xl drop-shadow-2xl">
-          ร่วมโหวตความงามของชุดผ้าไหมไทยภายใน ดิ โอลด์ สยาม พลาซ่า
+          ร่วมโหวตความงามของชุดผ้าไหมไทยภายใน{" "}
+          <span className="text-nowrap">ดิ โอลด์ สยาม พลาซ่า</span>{" "}
           เพื่อสนับสนุนเอกลักษณ์ และอนุรักษ์สมบัติทางวัฒนธรรมไทย
         </p>
 
@@ -37,23 +37,19 @@ export function GalleryHeader({ deviceType }: GalleryHeaderProps) {
             rel="noopener noreferrer"
             aria-label="facebook_osp"
           >
-            <Button variant="default" size="lg">
-              อ่านบทความ
-            </Button>
+            <Button variant="default">อ่านบทความ</Button>
           </a>
 
           <Dialog>
             <DialogTrigger asChild>
-              <Button variant="default" size="lg">
-                กติกาการโหวต
-              </Button>
+              <Button variant="default">กติกาการโหวต</Button>
             </DialogTrigger>
-            <DialogContent className="w-full font-prompt">
+            <DialogContent className="w-full font-prompt !max-h-[calc(100vh-50px)] overflow-y-auto">
               <DialogHeader className="text-left">
                 <DialogTitle>
                   กติกาการร่วมโหวตกิจกรรม The Old Siam: We're Proud of You
                 </DialogTitle>
-                <DialogDescription>
+                <DialogDescription asChild>
                   <ul className="list-decimal pl-4 text-sm">
                     {RULES_LIST.map((rule, index) => (
                       <li key={index}>{rule}</li>
@@ -82,7 +78,8 @@ export function GalleryHeader({ deviceType }: GalleryHeaderProps) {
           deviceType === "mobile" ? "text-sm" : "text-sm"
         } font-prompt max-w-lg`}
       >
-        ร่วมโหวตความงามของชุดผ้าไหมไทยภายใน ดิ โอลด์ สยาม พลาซ่า
+        ร่วมโหวตความงามของชุดผ้าไหมไทยภายใน{" "}
+        <span className="text-nowrap">ดิ โอลด์ สยาม พลาซ่า</span>{" "}
         เพื่อสนับสนุนเอกลักษณ์ และอนุรักษ์สมบัติทางวัฒนธรรมไทย
       </p>
 
@@ -93,22 +90,18 @@ export function GalleryHeader({ deviceType }: GalleryHeaderProps) {
           rel="noopener noreferrer"
           aria-label="facebook_osp"
         >
-          <Button variant="default" size="lg">
-            อ่านบทความ
-          </Button>
+          <Button variant="default">อ่านบทความ</Button>
         </a>
         <Dialog>
           <DialogTrigger asChild>
-            <Button variant="default" size="lg">
-              กติกาการโหวต
-            </Button>
+            <Button variant="default">กติกาการโหวต</Button>
           </DialogTrigger>
-          <DialogContent className="w-full font-prompt">
+          <DialogContent className="w-full font-prompt !max-h-[calc(100vh-50px)]  overflow-y-auto">
             <DialogHeader className="!text-left">
               <DialogTitle>
                 กติกาการร่วมโหวตกิจกรรม The Old Siam: We're Proud of You
               </DialogTitle>
-              <DialogDescription>
+              <DialogDescription asChild>
                 <ul className="list-decimal pl-4 text-sm">
                   {RULES_LIST.map((rule, index) => (
                     <li key={index}>{rule}</li>

@@ -68,6 +68,7 @@ export function PhotoModal({
   isSubmitting,
   votedSubmissionId,
 }: PhotoModalProps) {
+  const [url, setUrl] = useState("");
   const [showVoteForm, setShowVoteForm] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [showShareMenu, setShowShareMenu] = useState(false);
@@ -81,6 +82,12 @@ export function PhotoModal({
     likesCount: photo.votes.likes,
     sharesCount: photo.votes.shares,
   });
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setUrl(window.location.href);
+    }
+  }, []);
 
   // Utility functions
   const getUserId = (): string => {
@@ -329,7 +336,7 @@ export function PhotoModal({
     ...shareProps
   }: any) => (
     <ShareComponent
-      url={SHARE_CONFIG.url}
+      url={url}
       title={SHARE_CONFIG.title}
       onShareWindowClose={() => handleShareComplete(platform)}
       className="w-full"

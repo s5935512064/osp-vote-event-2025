@@ -44,6 +44,7 @@ export function useGalleryImages(campaignId?: string): UseGalleryImagesState {
     try {
       // ดึง stats ทั้งหมดจาก API
       const allStats = await GalleryService.getCampaignData(campaignId);
+      setCampaignData(allStats);
 
       setImages((prevImages) =>
         prevImages.map((image) => {

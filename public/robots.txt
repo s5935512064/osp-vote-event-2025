@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /event/2025/pride-month-vote/
+
+Sitemap: https://theoldsiam.co.th/event/2025/pride-month-vote/sitemap-index.xml

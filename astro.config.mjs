@@ -2,11 +2,24 @@ import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
 import tailwindcss from '@tailwindcss/vite';
 import { loadEnv } from "vite";
+import mdx from '@astrojs/mdx';
+import partytown from '@astrojs/partytown'
+import sitemap from '@astrojs/sitemap';
 
 const env = loadEnv(process.env.NODE_ENV || 'development', process.cwd(), '');
 
 export default defineConfig({
   base: env.NODE_ENV === 'production' ? '/event/2025/pride-month-vote' : '/',
+  site: 'https://theoldsiam.co.th/event/2025/pride-month-vote',
+  integrations: [
+    mdx(),
+    sitemap(),
+    partytown({
+      config: {
+        forward: ["dataLayer.push"],
+      },
+    }),
+  ],
   integrations: [react({
     experimentalReactChildren: true,
   })],
