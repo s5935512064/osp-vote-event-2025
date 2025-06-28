@@ -77,6 +77,9 @@ export interface VoteSubmission {
   submissionId: string; // เปลี่ยนจาก imageId
   voterName: string;
   voterPhone: string;
+  address: string;
+  reason: string;
+  customReason?: string;
 }
 
 export interface Vote {
@@ -85,4 +88,42 @@ export interface Vote {
   voterName: string;
   voterPhone: string;
   votedAt: string;
+}
+
+// Vote Status Types
+export interface VoteStatus {
+  hasVoted: boolean;
+  votedSubmissionId?: string;
+  votedAt?: string;
+}
+
+// Like/Share Action Types
+export interface LikeAction {
+  submissionId: string;
+  voterPhone: string;
+}
+
+export interface ShareAction {
+  submissionId: string;
+  voterPhone: string;
+  platform?: "facebook" | "line" | "twitter" | "copy";
+}
+
+// API Response for actions
+export interface ActionResponse {
+  success: boolean;
+  message?: string;
+  data?: {
+    likes?: number;
+    shares?: number;
+  };
+}
+
+// Local Storage Types
+export interface LocalUserActions {
+  phone: string;
+  votedSubmissionId?: string;
+  likedSubmissions: string[];
+  sharedSubmissions: string[];
+  lastUpdated: string;
 }

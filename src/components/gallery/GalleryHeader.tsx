@@ -14,44 +14,33 @@ import type { DeviceType, LayoutMode, CampaignDataResponse } from "./types";
 
 interface GalleryHeaderProps {
   deviceType: DeviceType;
-  layoutMode: LayoutMode;
-  setLayoutMode: (mode: LayoutMode) => void;
-  campaignData?: CampaignDataResponse | null;
 }
 
-export function GalleryHeader({
-  deviceType,
-  layoutMode,
-  setLayoutMode,
-  campaignData,
-}: GalleryHeaderProps) {
-  const campaignName = campaignData?.campaign.name || "WE'RE PROUD OF YOU";
+export function GalleryHeader({ deviceType }: GalleryHeaderProps) {
+  const campaignName = "WE'RE PROUD OF YOU";
 
   if (deviceType === "desktop") {
     return (
-      <div className="text-white w-fit shrink-0 flex flex-col gap-2 items-center justify-center absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 leading-none bg-accent-foreground/15 p-4 rounded-2xl shadow-2xl">
+      <div className="text-white w-fit shrink-0 flex flex-col gap-2 items-center justify-center leading-none  p-4 rounded-2xl h-fit ">
         <SparklesText className="text-3xl md:text-5xl lg:text-7xl font-permanent-marker text-center text-nowrap drop-shadow-2xl">
           {campaignName}
         </SparklesText>
-        <p className="text-center text-sm md:text-base font-prompt max-w-lg drop-shadow-2xl">
-          ร่วมโหวต "ผ้าไหมไทยผ่านความภาคภูมิใจของ ดิ โอลด์ สยาม"
-          และส่งต่อพลังแห่งความเท่าเทียม ความเข้าใจ และความรักในความเป็นตัวเอง
+        <p className="text-center text-sm md:text-base font-prompt max-w-xl drop-shadow-2xl">
+          ร่วมโหวตความงามของชุดผ้าไหมไทยภายใน ดิ โอลด์ สยาม พลาซ่า
+          เพื่อสนับสนุนเอกลักษณ์ และอนุรักษ์สมบัติทางวัฒนธรรมไทย
         </p>
 
         <div className="flex items-center justify-center gap-2">
-          <Button
-            variant="default"
-            size="lg"
-            onClick={() =>
-              setLayoutMode(layoutMode === "scattered" ? "grid" : "scattered")
-            }
+          <a
+            href="https://theoldsiam.co.th/en/blogs/the-old-siam-were-proud-of-you-vote-for-authentic-thai-silk"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="facebook_osp"
           >
-            {layoutMode === "grid" ? "โชว์แบบกระจาย" : "โชว์แบบตาราง"}
-          </Button>
-
-          <Button variant="default" size="lg">
-            อ่านบทความ
-          </Button>
+            <Button variant="default" size="lg">
+              อ่านบทความ
+            </Button>
+          </a>
 
           <Dialog>
             <DialogTrigger asChild>
@@ -93,17 +82,21 @@ export function GalleryHeader({
           deviceType === "mobile" ? "text-sm" : "text-sm"
         } font-prompt max-w-lg`}
       >
-        ร่วมโหวต "ชุดผ้าไหมไทย" ที่คุณชอบที่สุด
-        ในเดือนแห่งความหลากหลายและความภาคภูมิใจ
+        ร่วมโหวตความงามของชุดผ้าไหมไทยภายใน ดิ โอลด์ สยาม พลาซ่า
+        เพื่อสนับสนุนเอกลักษณ์ และอนุรักษ์สมบัติทางวัฒนธรรมไทย
       </p>
-      {campaignData && (
-        <p className="text-center text-xs text-white/80">
-          {campaignData.stats.totalSubmissions} รายการ |{" "}
-          {campaignData.stats.totalVotes} โหวต
-        </p>
-      )}
 
       <div className="flex items-center justify-center gap-2">
+        <a
+          href="https://theoldsiam.co.th/en/blogs/the-old-siam-were-proud-of-you-vote-for-authentic-thai-silk"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="facebook_osp"
+        >
+          <Button variant="default" size="lg">
+            อ่านบทความ
+          </Button>
+        </a>
         <Dialog>
           <DialogTrigger asChild>
             <Button variant="default" size="lg">
