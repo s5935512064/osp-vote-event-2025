@@ -200,7 +200,7 @@ const PhotoGallery = () => {
     <>
       <div className="flex flex-col gap-2 items-center justify-center mb-4 -mt-2">
         <GalleryHeader deviceType="desktop" />
-        {hasVoted && isInitialized && (
+        {!hasVoted && isInitialized && (
           <p className="text-yellow-400/80  text-sm">คลิกที่รูปภาพเพื่อโหวต</p>
         )}
       </div>

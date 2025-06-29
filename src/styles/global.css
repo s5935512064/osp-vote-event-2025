@@ -235,3 +235,30 @@
     font-size: 12px !important;
   }
 }
+
+/* Rainbow gradient animation */
+@keyframes rainbow-gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.rainbow-gradient {
+  background: linear-gradient(
+    90deg,
+    #e40303,
+    #ff8c00,
+    #ffed00,
+    #008018,
+    #004cff,
+    #732982
+  );
+  background-size: 200% 100%;
+  animation: rainbow-gradient 4s linear infinite;
+}

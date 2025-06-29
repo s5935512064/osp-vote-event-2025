@@ -418,9 +418,7 @@ export function PhotoModal({
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
       className={`w-full flex items-center justify-center space-x-2 px-4 sm:px-6 py-3 rounded-lg text-white font-medium transition-all ${
-        isVoted
-          ? "bg-green-500 cursor-not-allowed"
-          : "bg-[#0a3254] hover:bg-[#0a3254]/90"
+        isVoted ? " rainbow-gradient cursor-not-allowed" : " rainbow-gradient"
       }`}
       disabled={isVoted}
     >
