@@ -4,6 +4,7 @@ import Layout from '../layouts/Layout.astro';
 import OldSiamPlaza from "@/assets/OSP-Logo-W.png";
 import LogoSSD from "@/assets/logo-ssd.webp";
 import PhotoGallery from "@/components/photo-gallery";
+import { FacebookBrowserWarning } from "@/components/FacebookBrowserWarning";
 ---
 
 <Layout>
@@ -13,6 +14,9 @@ import PhotoGallery from "@/components/photo-gallery";
 			<Image src={OldSiamPlaza} alt="The Old Siam Plaza Logo" class="w-32 "  />
 		</a>
 	</header>
+
+
+	<FacebookBrowserWarning client:load />
 
 
 

@@ -1,0 +1,103 @@
+---
+// ตรวจสอบ URL ปัจจุบันเพื่อกำหนด redirect logic
+const currentUrl = Astro.url.pathname;
+const searchParams = Astro.url.searchParams;
+
+// กำหนด redirect URL based on path
+let redirectUrl = '/event/2025/pride-month-vote';
+
+// เก็บ tracking parameters
+const trackingParams = new URLSearchParams();
+['utm_source', 'utm_medium', 'utm_campaign', 'ref', 'source', 'lang'].forEach(param => {
+  if (searchParams.has(param)) {
+    trackingParams.set(param, searchParams.get(param)!);
+  }
+});
+
+if (trackingParams.toString()) {
+  redirectUrl += '?' + trackingParams.toString();
+}
+---
+
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>กำลังเปลี่ยนหน้า...</title>
+    
+    <!-- Meta refresh เป็น fallback หลัก -->
+    <meta http-equiv="refresh" content="0; url={redirectUrl}" />
+    
+    <!-- Preconnect สำหรับ performance -->
+    <link rel="preconnect" href="https://theoldsiam.co.th" />
+    
+    <style>
+      body {
+        font-family: 'Prompt', sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+      }
+      .container {
+        text-align: center;
+        padding: 2rem;
+      }
+      .spinner {
+        border: 4px solid rgba(255,255,255,0.3);
+        border-radius: 50%;
+        border-top: 4px solid white;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 1rem;
+      }
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="spinner"></div>
+      <h1>กำลังพาไปยังหน้าใหม่...</h1>
+      <p>หากไม่ได้เปลี่ยนหน้าโดยอัตโนมัติ <a href={redirectUrl} style="color: #ffeb3b;">คลิกที่นี่</a></p>
+    </div>
+
+    <script>
+      // Client-side redirect logic
+      (function() {
+        const currentPath = window.location.pathname;
+        const urlParams = new URLSearchParams(window.location.search);
+        
+        // กำหนด redirect URL
+        let targetUrl = '/event/2025/pride-month-vote';
+        
+        // ตรวจสอบและเก็บ valid parameters
+        const validParams = ['utm_source', 'utm_medium', 'utm_campaign', 'ref', 'source', 'lang'];
+        const preservedParams = new URLSearchParams();
+        
+        validParams.forEach(param => {
+          if (urlParams.has(param)) {
+            preservedParams.set(param, urlParams.get(param));
+          }
+        });
+        
+        // สร้าง final URL
+        const finalUrl = targetUrl + (preservedParams.toString() ? '?' + preservedParams.toString() : '');
+        
+        // Redirect ทันที
+        window.location.replace(finalUrl);
+        
+        // Fallback หาก replace ไม่ทำงาน
+        setTimeout(() => {
+          window.location.href = finalUrl;
+        }, 100);
+      })();
+    </script>
+  </body>
+</html>
