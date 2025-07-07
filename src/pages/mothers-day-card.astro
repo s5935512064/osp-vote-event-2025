@@ -1,0 +1,20 @@
+---
+import Layout from '../layouts/Layout.astro';
+import MothersDayCardCreator from '../components/MothersDayCardCreator';
+---
+
+<Layout title="Mother's Day Card Creator">
+	<main class="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-rose-50">
+		<div class="container mx-auto px-4 py-8">
+			<div class="text-center mb-8">
+				<h1 class="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-600 to-purple-600 mb-4">
+					💝 Mother's Day Card Creator
+				</h1>
+				<p class="text-lg text-gray-600 max-w-2xl mx-auto">
+					Create a beautiful personalized card for your mom with your own photos, heartfelt wishes, and share it on social media!
+				</p>
+			</div>
+			<MothersDayCardCreator client:load />
+		</div>
+	</main>
+</Layout>
