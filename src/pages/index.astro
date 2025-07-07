@@ -21,6 +21,32 @@ import { FacebookBrowserWarning } from "@/components/FacebookBrowserWarning";
 
 
 	<main class=" flex-1 flex flex-col  justify-between space-y-6 relative w-full shrink-0 font-prompt my-4">
+		<!-- Mother's Day Card Feature Banner -->
+		<section class="bg-gradient-to-r from-pink-100 via-purple-50 to-rose-100 rounded-lg p-6 border border-pink-200 mb-6">
+			<div class="text-center">
+				<h2 class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-600 to-purple-600 mb-2">
+					💝 Create Beautiful Mother's Day Cards
+				</h2>
+				<p class="text-gray-700 mb-4 max-w-2xl mx-auto">
+					Express your love with personalized cards featuring your own photos, heartfelt messages, and beautiful designs. Share directly to LINE, WhatsApp, Facebook and more!
+				</p>
+				<div class="flex flex-col sm:flex-row gap-3 justify-center items-center">
+					<a 
+						href="/mothers-day-card" 
+						class="bg-gradient-to-r from-pink-500 to-purple-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-pink-600 hover:to-purple-600 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
+					>
+						🌸 Start Creating Your Card
+					</a>
+					<div class="flex items-center text-sm text-gray-600">
+						<span class="mr-2">✨ Features:</span>
+						<span class="bg-white px-2 py-1 rounded mr-2">Photo Upload</span>
+						<span class="bg-white px-2 py-1 rounded mr-2">4 Styles</span>
+						<span class="bg-white px-2 py-1 rounded">LINE Sharing</span>
+					</div>
+				</div>
+			</div>
+		</section>
+
 		<PhotoGallery client:load />
 	</main>
 
