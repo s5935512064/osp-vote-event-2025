@@ -1,12 +1,18 @@
 import { type CardType } from "./types";
 
+import CardType1 from "../../assets/activity_mother/2.webp";
+import CardType2 from "../../assets/activity_mother/4.webp";
+import CardType3 from "../../assets/activity_mother/6.webp";
+import CardType4 from "../../assets/activity_mother/8.webp";
+import CardType5 from "../../assets/activity_mother/9.webp";
+
 export const CARD_TYPES: CardType[] = [
   {
     id: "gentle-bloom",
     name: "อ้อมใจแห่งรักแท้ (Unfading Warmth)",
     coverImage:
       "https://assets-manager.ssdapp.net/public/file/cbp2yyevr95ohw7ccuj69ims",
-    messageImage: "/card/2.webp",
+    messageImage: CardType1.src,
     description:
       "รักแท้…ไม่ต้องพูดมาก แค่มีแม่อยู่ตรงนั้น…ก็เพียงพอแล้ว มาร่วมเติมเต็มความทรงจำแห่งความอบอุ่นในวันแม่ ด้วยหัวใจที่เปล่งประกาย ที่ ดิ โอลด์ สยาม",
     theme: "gentle-bloom",
@@ -25,7 +31,7 @@ export const CARD_TYPES: CardType[] = [
     name: "ความอ่อนโยนบริสุทธิ์ (Pure Tenderness)",
     coverImage:
       "https://assets-manager.ssdapp.net/public/file/ks7ohcgxcnxrdqp4q42ajjy8",
-    messageImage: "/card/4.webp",
+    messageImage: CardType2.src,
     description:
       "เมื่อคำว่ารักไม่ต้องมีเงื่อนไข… ความรักของแม่ก็เปรียบเสมือนกลีบดอกไม้สีขาวบริสุทธิ์ ที่โอบกอดเราด้วยความอ่อนโยนไม่เปลี่ยนแปลง ร่วมบอกรักคุณแม่ด้วยหัวใจที่บริสุทธิ์ที่สุด ที่ ดิ โอลด์ สยาม",
     theme: "white-grace",
@@ -44,7 +50,7 @@ export const CARD_TYPES: CardType[] = [
     name: "ความรักที่เบ่งบานไม่มีที่สิ้นสุด (Everlasting Bloom of Love)",
     coverImage:
       "https://assets-manager.ssdapp.net/public/file/tpliugec57r589f7k7bexjtk",
-    messageImage: "/card/6.webp",
+    messageImage: CardType3.src,
     description:
       "แม่คือดอกไม้แห่งรัก ที่เบ่งบานอยู่ในใจเราทุกวันไม่ว่าเวลาจะผ่านไปนานแค่ไหน… ขอเชิญร่วมแบ่งปันช่วงเวลาแสนอบอุ่นในวันแม่ กับความรักที่ไม่มีวันโรยรา ที่ ดิ โอลด์ สยาม",
     theme: "blooming-devotion",
@@ -63,7 +69,7 @@ export const CARD_TYPES: CardType[] = [
     name: "ความรักที่ไม่มีวันเก่า (Elegant & Eternal)",
     coverImage:
       "https://assets-manager.ssdapp.net/public/file/up4mj3qii9ppkfb9tgvuk5fr",
-    messageImage: "/card/8.webp",
+    messageImage: CardType4.src,
     description:
       "จากวันแรกจนวันนี้ ความรักของแม่ยังคงมั่นคงและงดงามเสมอ เหมือนดอกไม้ที่ผลิบานด้วยความหมายอันลึกซึ้ง ร่วมเฉลิมฉลองวันแม่ไปกับบรรยากาศแสนอบอุ่น ณ ดิ โอลด์ สยาม",
     theme: "timeless-affection",
@@ -82,7 +88,7 @@ export const CARD_TYPES: CardType[] = [
     name: "สายลมแห่งความสงบ (Calmness of Love)",
     coverImage:
       "https://assets-manager.ssdapp.net/public/file/csvwqvj60faznvugfe702nsd",
-    messageImage: "/card/9.webp",
+    messageImage: CardType5.src,
     description:
       "ในอ้อมกอดของแม่...เรารู้สึกปลอดภัย ราวกับอยู่ท่ามกลางทุ่งดอกไม้และผีเสื้อในวันที่อากาศแสนดี มอบความรักกลับคืนแด่ผู้หญิงที่ยิ่งใหญ่ที่สุดในชีวิต ที่ ดิ โอลด์ สยาม",
     theme: "blue-serenity",
