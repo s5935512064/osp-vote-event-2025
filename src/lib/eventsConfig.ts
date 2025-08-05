@@ -1,5 +1,4 @@
 import type { Event } from "./types";
-import MothersDayImage from "../assets/activity_mother/Happy Mother Day.webp?url";
 
 export const events: Event[] = [
   {
@@ -8,8 +7,9 @@ export const events: Event[] = [
     subtitle: "ร่วมแสดงความรักและความกตัญญูต่อคุณแม่",
     description:
       "12 สิงหาคมปีนี้ ให้ ดิโอลด์ สยาม พลาซ่า เป็นสื่อกลางแทนความรักและความรู้สึกอันแสนอบอุ่นที่คุณมีต่อคุณแม่ ร่วมกิจกรรมพิเศษและชมคอลเลกชันผ้าไหมไทยสุดพิเศษ พร้อมรับของที่ระลึกสำหรับคุณแม่ที่รัก",
-    href: "https://assets-manager.ssdapp.net/public/file/ppmfyud6wyaj8fjuvz4koui7",
-    image: MothersDayImage,
+    href: "/event/2025/mothers-day-activity",
+    image:
+      "https://assets-manager.ssdapp.net/public/file/ppmfyud6wyaj8fjuvz4koui7",
     status: "active",
     startDate: "2025-08-08",
     endDate: "2025-08-30",
