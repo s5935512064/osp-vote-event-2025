@@ -1,366 +1,687 @@
-import React, { useState, useRef, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Upload, Download, Share2, Heart, Flower2, Sparkles } from 'lucide-react';
-import { Button } from './ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
-import CardStyleSelector from './card/CardStyleSelector';
-import ImageUploader from './card/ImageUploader';
-import WishTextEditor from './card/WishTextEditor';
-import CardPreview from './card/CardPreview';
-import SocialSharing from './card/SocialSharing';
+import React, { useState, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { type DragEndEvent } from "@dnd-kit/core";
+import {
+  Upload,
+  Download,
+  ArrowLeft,
+  Printer,
+  Loader2,
+  Trash2,
+} from "lucide-react";
+import { Button } from "./ui/button";
+import { ProgressSteps } from "./mothers-day-card/ProgressSteps";
+import { CardTypeItem } from "./mothers-day-card/CardTypeItem";
+import { CardPreview } from "./mothers-day-card/CardPreview";
+import { useCardCanvas } from "./mothers-day-card/hooks/useCardCanvas";
+import { CARD_TYPES } from "./mothers-day-card/constants";
+import type { CardData, ElementSize, StepType } from "./mothers-day-card/types";
+import {
+  MothersDayCardService,
+  type MothersDayCardEntity,
+} from "@/lib/motherdaysService";
+import { downloadFile } from "../lib/download";
 
-export interface CardStyle {
-  id: string;
-  name: string;
-  background: string;
-  border: string;
-  textColor: string;
-  theme: 'floral' | 'elegant' | 'cute' | 'modern';
-}
+//@ts-ignore
+import domtoimage from "dom-to-image-more";
 
-export interface CardData {
-  image: string | null;
-  style: CardStyle;
-  wishText: string;
-  authorName: string;
-}
-
-const defaultStyles: CardStyle[] = [
-  {
-    id: 'floral-pink',
-    name: 'Floral Pink',
-    background: 'linear-gradient(135deg, #fce7f3 0%, #fbcfe8 50%, #f9a8d4 100%)',
-    border: '3px solid #ec4899',
-    textColor: '#831843',
-    theme: 'floral'
-  },
-  {
-    id: 'elegant-purple',
-    name: 'Elegant Purple',
-    background: 'linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 50%, #d8b4fe 100%)',
-    border: '3px solid #a855f7',
-    textColor: '#581c87',
-    theme: 'elegant'
-  },
-  {
-    id: 'cute-rose',
-    name: 'Cute Rose',
-    background: 'linear-gradient(135deg, #fff1f2 0%, #fecaca 50%, #fca5a5 100%)',
-    border: '3px solid #ef4444',
-    textColor: '#7f1d1d',
-    theme: 'cute'
-  },
-  {
-    id: 'modern-coral',
-    name: 'Modern Coral',
-    background: 'linear-gradient(135deg, #fff7ed 0%, #fed7aa 50%, #fb923c 100%)',
-    border: '3px solid #ea580c',
-    textColor: '#9a3412',
-    theme: 'modern'
-  }
-];
+// เพิ่ม import สำหรับ Sweet Alert
+import Swal from "sweetalert2";
 
 const MothersDayCardCreator: React.FC = () => {
   const [cardData, setCardData] = useState<CardData>({
-    image: null,
-    style: defaultStyles[0],
-    wishText: 'Happy Mother\'s Day! Thank you for all your love and care. You are the best mom in the world! 💕',
-    authorName: ''
+    cardType: CARD_TYPES[0],
+    coverText: "Happy Mother's Day",
+    messageText: "",
+    authorName: "",
+    customImage: undefined,
   });
-  
-  const [currentStep, setCurrentStep] = useState<'upload' | 'style' | 'text' | 'preview'>('upload');
-  const [isSharing, setIsSharing] = useState(false);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  const handleImageUpload = useCallback((imageData: string) => {
-    setCardData(prev => ({ ...prev, image: imageData }));
-    setCurrentStep('style');
-  }, []);
+  const [cardResponse, setCardResponse] = useState<MothersDayCardEntity | null>(
+    null
+  );
 
-  const handleStyleSelect = useCallback((style: CardStyle) => {
-    setCardData(prev => ({ ...prev, style }));
-    setCurrentStep('text');
-  }, []);
+  const [currentStep, setCurrentStep] = useState<StepType>("select");
 
-  const handleTextUpdate = useCallback((wishText: string, authorName: string) => {
-    setCardData(prev => ({ ...prev, wishText, authorName }));
-  }, []);
+  // ปรับ initial positions และ sizes ให้สอดคล้องกับ base dimensions
+  const [dragPositions, setDragPositions] = useState(() => {
+    return {
+      message: { x: 520, y: 380 }, // ตำแหน่งกลางแนวนอน, บนกว่าเดิม
+      author: { x: 650, y: 500 }, // ตำแหน่งกลางแนวนอน, กลางแนวตั้ง
+      image: { x: 230, y: 550 }, // ซ้ายกว่าเดิม
+    };
+  });
 
-  const generateCardImage = useCallback(async (): Promise<string> => {
-    return new Promise((resolve) => {
-      const canvas = canvasRef.current;
-      if (!canvas) return resolve('');
+  const [elementSizes, setElementSizes] = useState(() => {
+    return {
+      message: { width: 600, height: 200 }, // ลดขนาดลง
+      author: { width: 200, height: 60 }, // ลดขนาดลง
+      image: { width: 150, height: 150 }, // ลดขนาดลง
+    };
+  });
 
-      const ctx = canvas.getContext('2d');
-      if (!ctx) return resolve('');
+  const [isUploading, setIsUploading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false); // เพิ่ม state สำหรับการ submit
 
-      // Set canvas size
-      canvas.width = 800;
-      canvas.height = 600;
+  const { canvasRef, printCard, downloadCard } = useCardCanvas({
+    cardData,
+    dragPositions,
+    elementSizes,
+  });
 
-      // Create gradient background
-      const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-      if (cardData.style.background.includes('gradient')) {
-        gradient.addColorStop(0, '#fce7f3');
-        gradient.addColorStop(0.5, '#fbcfe8');
-        gradient.addColorStop(1, '#f9a8d4');
+  const generateCardImage = async () => {
+    // สร้าง hidden container สำหรับ export ที่มี aspect ratio เดียวกับ preview
+    const exportContainer = document.createElement("div");
+    exportContainer.style.position = "absolute";
+    exportContainer.style.left = "-9999px";
+    exportContainer.style.top = "-9999px";
+
+    // ใช้ aspect ratio 4:3 เหมือน preview แต่ขนาดใหญ่ขึ้น
+    const exportWidth = 1024;
+    const exportHeight = 768; // 4:3 ratio
+
+    exportContainer.style.width = `${exportWidth}px`;
+    exportContainer.style.height = `${exportHeight}px`;
+    exportContainer.style.background = "white";
+    exportContainer.className = "card-export-container";
+    document.body.appendChild(exportContainer);
+
+    try {
+      // Clone CardPreview content
+      const cardPreviewElement = document.querySelector(
+        ".card-preview-container"
+      );
+
+      if (cardPreviewElement) {
+        exportContainer.innerHTML = cardPreviewElement.innerHTML;
+        const clonedContainer = exportContainer.querySelector(
+          ".card-preview-container"
+        );
+        if (clonedContainer) {
+          (clonedContainer as HTMLElement).style.width = `${exportWidth}px`;
+          (clonedContainer as HTMLElement).style.height = `${exportHeight}px`;
+          (clonedContainer as HTMLElement).style.maxWidth = `${exportWidth}px`;
+          (
+            clonedContainer as HTMLElement
+          ).style.maxHeight = `${exportHeight}px`;
+
+          // แสดงเฉพาะ desktop version และซ่อน mobile version
+          const desktopElements = clonedContainer.querySelectorAll(".hidden");
+          desktopElements.forEach((element) => {
+            (element as HTMLElement).classList.remove("hidden");
+            (element as HTMLElement).classList.add("block");
+          });
+
+          const mobileElements = clonedContainer.querySelectorAll(".block");
+          mobileElements.forEach((element) => {
+            if (
+              element.classList.contains("md:hidden") ||
+              element.previousElementSibling?.classList.contains("hidden")
+            ) {
+              (element as HTMLElement).classList.remove("block");
+              (element as HTMLElement).classList.add("hidden");
+            }
+          });
+        }
+
+        const previewElement = document.querySelector(
+          ".card-preview-container"
+        ) as HTMLElement;
+
+        const previewWidth = previewElement?.offsetWidth || 400;
+        const previewHeight = previewElement?.offsetHeight || 300;
+
+        const scaleX = exportWidth / previewWidth;
+        const scaleY = exportHeight / previewHeight;
+        const scale = Math.min(scaleX, scaleY);
+        // แสดงเฉพาะ desktop version ใน export
+        const desktopElements = exportContainer.querySelectorAll(".hidden");
+        desktopElements.forEach((element) => {
+          (element as HTMLElement).style.display = "block";
+        });
+
+        const mobileElements = exportContainer.querySelector("#mobile");
+        if (mobileElements) {
+          (mobileElements as HTMLElement).style.display = "none";
+        }
+
+        const dataUrl = await domtoimage.toPng(exportContainer, {
+          bgcolor: "#ffffff",
+          height: exportHeight,
+          width: exportWidth,
+          quality: 1.0,
+          cacheBust: true,
+          imagePlaceholder: undefined,
+          copyDefaultStyles: true,
+          scale: 1,
+          useCORS: true, // เพิ่ม option นี้
+          allowTaint: true, // เพิ่ม option นี้
+          filter: (node: any) => {
+            return !node.classList?.contains("export-ignore");
+          },
+          onclone: (clonedNode: any) => {
+            const container = clonedNode as HTMLElement;
+            container.style.width = `${exportWidth}px`;
+            container.style.height = `${exportHeight}px`;
+            container.style.position = "relative";
+            container.style.background = "white";
+
+            // ลบ resize handles
+            const resizeHandles = container.querySelectorAll(
+              '.absolute[style*="bg-blue-400"], .absolute[style*="bg-blue-500"], .fixed'
+            );
+            resizeHandles.forEach((handle) => handle.remove());
+
+            // ปรับขนาด font
+            const textElements = container.querySelectorAll(
+              '[style*="font-size"]'
+            );
+
+            textElements.forEach((element) => {
+              const htmlElement = element as HTMLElement;
+              const currentStyle = htmlElement.style.fontSize;
+
+              if (currentStyle) {
+                const fontSize = parseFloat(currentStyle);
+                htmlElement.style.fontSize = `${fontSize}px`;
+              }
+            });
+
+            const style = document.createElement("style");
+            style.textContent = `
+              @font-face {
+                font-family: 'fonttintin';
+                src: url('${window.location.origin}/fonts/fonttintin.ttf') format('truetype');
+                font-weight: normal;
+                font-style: normal;
+              }
+              * {
+                font-family: 'fonttintin', sans-serif !important;
+                border: none !important;
+                outline: none !important;
+                box-shadow: none !important;
+              }
+              .card-preview-container {
+                border: none !important;
+                outline: none !important;
+                box-shadow: none !important;
+              }
+              .card-preview-container * {
+                border: none !important;
+                outline: none !important;
+                box-shadow: none !important;
+              }
+              .draggable-element {
+                border: none !important;
+                outline: none !important;
+              }
+              .resize-handle, .absolute[style*="bg-blue-400"], .fixed {
+                display: none !important;
+              }
+              *:focus {
+                outline: none !important;
+                border: none !important;
+              }
+              *:hover {
+                border: none !important;
+                outline: none !important;
+              }
+            `;
+            container.appendChild(style);
+          },
+        });
+
+        return dataUrl;
       }
-      ctx.fillStyle = gradient;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    } finally {
+      // ลบ container
+      document.body.removeChild(exportContainer);
+    }
+  };
 
-      // Draw border
-      ctx.strokeStyle = cardData.style.border.split(' ')[2];
-      ctx.lineWidth = 6;
-      ctx.strokeRect(10, 10, canvas.width - 20, canvas.height - 20);
+  // ฟังก์ชันสำหรับแสดง Sweet Alert และส่ง API
+  const handleCreateCard = async () => {
+    try {
+      setIsSubmitting(true);
 
-      // Load and draw user image if available
-      if (cardData.image) {
-        const img = new Image();
-        img.onload = () => {
-          // Calculate aspect ratio and position
-          const maxWidth = 300;
-          const maxHeight = 200;
-          const imgAspect = img.width / img.height;
-          const maxAspect = maxWidth / maxHeight;
-          
-          let drawWidth, drawHeight;
-          if (imgAspect > maxAspect) {
-            drawWidth = maxWidth;
-            drawHeight = maxWidth / imgAspect;
-          } else {
-            drawHeight = maxHeight;
-            drawWidth = maxHeight * imgAspect;
-          }
-          
-          const x = (canvas.width - drawWidth) / 2;
-          const y = 50;
-          
-          ctx.drawImage(img, x, y, drawWidth, drawHeight);
-          
-          // Draw text
-          drawText(ctx);
-          resolve(canvas.toDataURL('image/png'));
+      Swal.fire({
+        title: "กำลังสร้างการ์ด...",
+        text: "กรุณารอสักครู่ กำลังบันทึกการ์ดของคุณ",
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showConfirmButton: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
+
+      // สร้างภาพการ์ด
+      const cardImageDataUrl: File = await generateCardImage().then((dataUrl) =>
+        base64ToFile(dataUrl, `mothers-day-card-${Date.now()}.png`)
+      );
+
+      const response = await MothersDayCardService.submitCard({
+        cardType: cardData.cardType.id,
+        cardImage: cardImageDataUrl,
+        coverImage: cardData.cardType.coverImage,
+        authorName: cardData.authorName,
+        messageText: cardData.messageText,
+      });
+
+      if (response) {
+        setCardResponse(response);
+      }
+
+      Swal.fire({
+        icon: "success",
+        title: "สร้างการ์ดสำเร็จ!",
+        text: "ขอบคุณที่ให้เราเป็นส่วนหนึ่งในการตอบแทนความรักของคุณ",
+        confirmButtonText: "ตกลง",
+        confirmButtonColor: "#0a3254",
+        timer: 3000,
+      }).then(() => {
+        setCurrentStep("preview");
+      });
+    } catch (error) {
+      console.error("Error creating card:", error);
+
+      // แสดง error message
+      Swal.fire({
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
+        text: "ไม่สามารถสร้างการ์ดได้ กรุณาลองใหม่อีกครั้ง",
+        confirmButtonText: "ลองใหม่",
+        confirmButtonColor: "#dc2626",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Handle drag end for DnD
+  const handleDragEnd = useCallback((event: DragEndEvent) => {
+    const { active, delta } = event;
+
+    if (active) {
+      const elementId = active.id as string;
+
+      setDragPositions((prevPositions) => {
+        const currentPosition =
+          prevPositions[elementId as keyof typeof prevPositions];
+
+        const newX = currentPosition.x + delta.x;
+        const newY = currentPosition.y + delta.y;
+
+        return {
+          ...prevPositions,
+          [elementId]: { x: newX, y: newY },
         };
-        img.src = cardData.image;
-      } else {
-        drawText(ctx);
-        resolve(canvas.toDataURL('image/png'));
+      });
+    }
+  }, []);
+
+  // Handlers
+  const handleInputChange = useCallback(
+    (field: keyof CardData, value: string) => {
+      setCardData((prev) => ({ ...prev, [field]: value }));
+    },
+    []
+  );
+
+  const handleCardTypeSelect = useCallback((cardType: any) => {
+    setCardData((prev) => ({ ...prev, cardType }));
+    setCurrentStep("customize");
+  }, []);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const file = e.target.files?.[0];
+    if (file) {
+      setIsUploading(true);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setCardData((prev) => ({
+          ...prev,
+          customImage: e.target?.result as string,
+        }));
+        setIsUploading(false);
+      };
+      reader.onerror = () => {
+        setIsUploading(false);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  }, []);
+
+  const removeCustomImage = useCallback(() => {
+    setIsUploading(false);
+    setCardData((prev) => ({
+      ...prev,
+      customImage: undefined,
+    }));
+    const fileInput = document.getElementById(
+      "image-upload"
+    ) as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = "";
+    }
+  }, []);
+
+  const handleSizeChange = useCallback(
+    (elementId: string, newSize: ElementSize) => {
+      console.log(elementId, newSize, "newSize");
+      setElementSizes((prev) => ({
+        ...prev,
+        [elementId]: newSize,
+      }));
+    },
+    []
+  );
+
+  const base64ToFile = useCallback(
+    (base64String: string, fileName: string): File => {
+      // Extract the data part from data URL
+      const arr = base64String.split(",");
+      const mime = arr[0].match(/:(.*?);/)?.[1] || "image/png";
+      const bstr = atob(arr[1]);
+      let n = bstr.length;
+      const u8arr = new Uint8Array(n);
+
+      while (n--) {
+        u8arr[n] = bstr.charCodeAt(n);
       }
-    });
-  }, [cardData]);
 
-  const drawText = (ctx: CanvasRenderingContext2D) => {
-    ctx.fillStyle = cardData.style.textColor;
-    ctx.textAlign = 'center';
-    
-    // Title
-    ctx.font = 'bold 32px serif';
-    ctx.fillText('Happy Mother\'s Day', 400, 320);
-    
-    // Wish text
-    ctx.font = '20px serif';
-    const lines = wrapText(ctx, cardData.wishText, 600);
-    lines.forEach((line, index) => {
-      ctx.fillText(line, 400, 360 + (index * 30));
-    });
-    
-    // Author
-    if (cardData.authorName) {
-      ctx.font = 'italic 18px serif';
-      ctx.fillText(`- ${cardData.authorName}`, 400, 500);
-    }
-    
-    // Decorative hearts
-    ctx.font = '24px serif';
-    ctx.fillText('💖', 100, 100);
-    ctx.fillText('🌸', 700, 100);
-    ctx.fillText('💐', 100, 500);
-    ctx.fillText('🌹', 700, 500);
-  };
+      return new File([u8arr], fileName, { type: mime });
+    },
+    []
+  );
 
-  const wrapText = (ctx: CanvasRenderingContext2D, text: string, maxWidth: number): string[] => {
-    const words = text.split(' ');
-    const lines: string[] = [];
-    let currentLine = words[0];
-
-    for (let i = 1; i < words.length; i++) {
-      const word = words[i];
-      const width = ctx.measureText(currentLine + ' ' + word).width;
-      if (width < maxWidth) {
-        currentLine += ' ' + word;
-      } else {
-        lines.push(currentLine);
-        currentLine = word;
-      }
-    }
-    lines.push(currentLine);
-    return lines;
-  };
-
-  const nextStep = () => {
-    const steps: Array<'upload' | 'style' | 'text' | 'preview'> = ['upload', 'style', 'text', 'preview'];
-    const currentIndex = steps.indexOf(currentStep);
-    if (currentIndex < steps.length - 1) {
-      setCurrentStep(steps[currentIndex + 1]);
-    }
-  };
-
-  const prevStep = () => {
-    const steps: Array<'upload' | 'style' | 'text' | 'preview'> = ['upload', 'style', 'text', 'preview'];
-    const currentIndex = steps.indexOf(currentStep);
-    if (currentIndex > 0) {
-      setCurrentStep(steps[currentIndex - 1]);
-    }
-  };
-
-  const stepTitles = {
-    upload: 'Upload Photo',
-    style: 'Choose Style',
-    text: 'Add Your Wish',
-    preview: 'Preview & Share'
-  };
-
-  return (
-    <div className="max-w-6xl mx-auto">
-      {/* Progress Bar */}
-      <div className="mb-8">
-        <div className="flex justify-between items-center mb-4">
-          {Object.entries(stepTitles).map(([step, title], index) => (
-            <div key={step} className="flex items-center">
-              <motion.div
-                className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${
-                  currentStep === step
-                    ? 'bg-pink-500 text-white'
-                    : Object.keys(stepTitles).indexOf(currentStep) > index
-                    ? 'bg-pink-200 text-pink-700'
-                    : 'bg-gray-200 text-gray-500'
-                }`}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                {index + 1}
-              </motion.div>
-              <span className={`ml-2 text-sm font-medium ${
-                currentStep === step ? 'text-pink-600' : 'text-gray-500'
-              }`}>
-                {title}
-              </span>
-              {index < Object.keys(stepTitles).length - 1 && (
-                <div className={`w-16 h-1 mx-4 rounded ${
-                  Object.keys(stepTitles).indexOf(currentStep) > index
-                    ? 'bg-pink-300'
-                    : 'bg-gray-200'
-                }`} />
-              )}
-            </div>
-          ))}
-        </div>
+  // Components
+  const CardTypeSelector = (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      className="space-y-6"
+    >
+      <div className="text-center">
+        <p className="text-gray-600">
+          เลือกการ์ดที่คุณชอบเพื่อส่งความรักให้คุณแม่
+        </p>
       </div>
 
-      {/* Main Content */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Left Panel - Controls */}
-        <div className="space-y-6">
-          <AnimatePresence mode="wait">
-            {currentStep === 'upload' && (
-              <motion.div
-                key="upload"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 20 }}
-                transition={{ duration: 0.3 }}
-              >
-                <ImageUploader onImageUpload={handleImageUpload} />
-              </motion.div>
-            )}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mx-auto">
+        {CARD_TYPES.map((cardType) => (
+          <div key={cardType.id} className="space-y-4">
+            <CardTypeItem
+              cardType={cardType}
+              isSelected={cardData.cardType.id === cardType.id}
+              onSelect={handleCardTypeSelect}
+            />
+          </div>
+        ))}
+      </div>
+    </motion.div>
+  );
 
-            {currentStep === 'style' && (
-              <motion.div
-                key="style"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 20 }}
-                transition={{ duration: 0.3 }}
-              >
-                <CardStyleSelector
-                  styles={defaultStyles}
-                  selectedStyle={cardData.style}
-                  onStyleSelect={handleStyleSelect}
-                />
-              </motion.div>
-            )}
-
-            {currentStep === 'text' && (
-              <motion.div
-                key="text"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 20 }}
-                transition={{ duration: 0.3 }}
-              >
-                <WishTextEditor
-                  wishText={cardData.wishText}
-                  authorName={cardData.authorName}
-                  onUpdate={handleTextUpdate}
-                />
-              </motion.div>
-            )}
-
-            {currentStep === 'preview' && (
-              <motion.div
-                key="preview"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 20 }}
-                transition={{ duration: 0.3 }}
-              >
-                <SocialSharing
-                  cardData={cardData}
-                  onGenerateImage={generateCardImage}
-                />
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {/* Navigation Buttons */}
-          <div className="flex justify-between">
-            <Button
-              variant="outline"
-              onClick={prevStep}
-              disabled={currentStep === 'upload'}
-              className="flex items-center space-x-2"
-            >
-              <span>← Previous</span>
-            </Button>
-
-            {currentStep !== 'preview' ? (
-              <Button
-                onClick={nextStep}
-                disabled={currentStep === 'upload' && !cardData.image}
-                className="flex items-center space-x-2 bg-pink-500 hover:bg-pink-600"
-              >
-                <span>Next →</span>
-              </Button>
+  const CardCustomizer = (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      className="space-y-6 max-w-screen-lg mx-auto"
+    >
+      <div className="grid grid-cols-1 gap-4">
+        <div className="flex justify-between">
+          <Button
+            type="button"
+            onClick={() => setCurrentStep("select")}
+            variant="outline"
+            className="flex items-center gap-2"
+          >
+            <ArrowLeft size={16} />
+            กลับไปเลือกแบบ
+          </Button>
+          <Button
+            type="button"
+            onClick={handleCreateCard} // เปลี่ยนเป็น handleCreateCard
+            disabled={isSubmitting} // ปิดปุ่มเมื่อกำลัง submit
+            className="bg-[#0a3254] text-white px-8 py-3 rounded-lg flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isSubmitting ? (
+              <>
+                <Loader2 size={16} className="animate-spin" />
+                กำลังสร้าง...
+              </>
             ) : (
-              <Button
-                onClick={() => setIsSharing(true)}
-                className="flex items-center space-x-2 bg-pink-500 hover:bg-pink-600"
-              >
-                <Share2 className="w-4 h-4" />
-                <span>Share Card</span>
-              </Button>
+              "สร้างการ์ด"
             )}
+          </Button>
+        </div>
+
+        {/* Form Section */}
+        <div className="gap-2 grid grid-cols-1 md:grid-cols-2 relative h-full">
+          <div className="space-y-2 relative">
+            <label className="block text-sm font-medium text-gray-700">
+              ข้อความอวยพร
+            </label>
+            <textarea
+              value={cardData.messageText}
+              onChange={(e) => handleInputChange("messageText", e.target.value)}
+              onKeyDown={handleKeyDown}
+              rows={6}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white focus:border-transparent resize-none"
+              placeholder="เขียนข้อความถึงคุณแม่..."
+              style={{
+                transform: "translateZ(0)",
+                willChange: "auto",
+              }}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                ชื่อผู้ส่ง
+              </label>
+              <input
+                type="text"
+                value={cardData.authorName}
+                onChange={(e) =>
+                  handleInputChange("authorName", e.target.value)
+                }
+                onKeyDown={handleKeyDown}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white focus:border-transparent"
+                placeholder="ชื่อของคุณ"
+                style={{
+                  transform: "translateZ(0)",
+                  willChange: "auto",
+                }}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                รูปภาพ (ไม่บังคับ)
+              </label>
+              <div className="relative">
+                <input
+                  type="file"
+                  id="image-upload"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  className="hidden"
+                  disabled={isUploading}
+                />
+                {cardData.customImage ? (
+                  <div className="mt-2 relative aspect-square max-h-40">
+                    <img
+                      src={cardData.customImage}
+                      alt="Preview"
+                      className="w-full h-full object-cover rounded-lg"
+                    />
+                    <button
+                      type="button"
+                      onClick={removeCustomImage}
+                      disabled={isUploading}
+                      className="absolute shrink-0 top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors aspect-square disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <Trash2 size={20} />
+                    </button>
+                  </div>
+                ) : (
+                  <label
+                    htmlFor="image-upload"
+                    className={`w-full h-full px-4 py-3 border-2 border-gray-300 rounded-lg cursor-pointer duration-200 flex flex-col items-center justify-center gap-2 bg-white hover:bg-gray-200 transition-all ${
+                      isUploading ? "opacity-50 cursor-not-allowed" : ""
+                    }`}
+                  >
+                    {isUploading ? (
+                      <Loader2 size={24} className="text-gray-400" />
+                    ) : (
+                      <Upload size={24} className="text-gray-400" />
+                    )}
+
+                    <span className="text-sm text-gray-600">
+                      คลิกเพื่ออัปโหลดรูปภาพ
+                    </span>
+                  </label>
+                )}
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Right Panel - Preview */}
-        <div className="lg:sticky lg:top-8">
-          <CardPreview cardData={cardData} />
+        {/* Preview Section */}
+        <div className="space-y-4">
+          <h3 className="text-gray-800">ตัวอย่างการ์ด</h3>
+          <div style={{ transform: "translateZ(0)", willChange: "auto" }}>
+            <CardPreview
+              cardData={cardData}
+              dragPositions={dragPositions}
+              elementSizes={elementSizes}
+              onDragEnd={handleDragEnd}
+              onSizeChange={handleSizeChange}
+            />
+          </div>
         </div>
       </div>
+    </motion.div>
+  );
 
-      {/* Hidden Canvas for Image Generation */}
-      <canvas ref={canvasRef} style={{ display: 'none' }} />
+  const FullPreview = (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      className="space-y-6"
+    >
+      {cardResponse != null && (
+        <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="w-full flex flex-col gap-4">
+            <img
+              src={cardResponse.coverImage}
+              alt="Card Image"
+              className="w-full h-full object-cover"
+            />
+            <div className="flex justify-center gap-4">
+              {/* <Button
+                type="button"
+                onClick={() => printCardFromUrl(cardResponse.coverImage)}
+                className="bg-pink-500 hover:bg-pink-600 text-white px-8 py-3 rounded-lg flex items-center gap-2"
+              >
+                <Printer size={16} />
+                พิมพ์การ์ด
+              </Button> */}
+              <Button
+                type="button"
+                onClick={() =>
+                  downloadFile(
+                    cardResponse.coverImage,
+                    `mothers-day-card-${Date.now()}.png`
+                  )
+                }
+                className="bg-green-500 hover:bg-green-600 text-white px-8 py-3 rounded-lg flex items-center gap-2"
+              >
+                <Download size={16} />
+                โหลดเก็บ
+              </Button>
+            </div>
+          </div>
+
+          <div className="w-full flex flex-col gap-4">
+            <img
+              src={cardResponse.cardImage}
+              alt="Card Image"
+              className="w-full h-full object-cover"
+            />
+
+            <div className="flex justify-center gap-4">
+              {/* <Button
+                type="button"
+                onClick={() => printCardFromUrl(cardResponse.cardImage)}
+                className="bg-pink-500 hover:bg-pink-600 text-white px-8 py-3 rounded-lg flex items-center gap-2"
+              >
+                <Printer size={16} />
+                พิมพ์การ์ด
+              </Button> */}
+              <Button
+                type="button"
+                onClick={() =>
+                  downloadFile(
+                    cardResponse.cardImage,
+                    `mothers-day-card-${Date.now()}.png`
+                  )
+                }
+                className="bg-green-500 hover:bg-green-600 text-white px-8 py-3 rounded-lg flex items-center gap-2"
+              >
+                <Download size={16} />
+                โหลดเก็บ
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+    </motion.div>
+  );
+
+  return (
+    <div className="w-full" style={{ overflow: "hidden" }}>
+      <div className="mx-auto px-4 mb-10">
+        {/* Header */}
+        <div className="text-center md:my-4">
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#0a3254] mb-2">
+            สร้างการ์ดวันแม่
+          </h1>
+          <p className="text-base md:text-lg text-gray-600 max-w-2xl mx-auto">
+            เชิญชวนทุกท่านสร้างการ์ดอวยพร ในโอกาสวันแม่ 12 สิงหาคม ให้{" "}
+            <span className="font-semibold whitespace-nowrap">
+              ดิ โอลด์ สยาม พลาซ่า
+            </span>{" "}
+            เป็นสื่อกลางแทนความรักและความรู้สึกอันแสนอบอุ่นที่คุณมีต่อคุณแม่
+          </p>
+        </div>
+
+        <ProgressSteps currentStep={currentStep} />
+
+        {/* Main Content */}
+        <AnimatePresence mode="wait">
+          {currentStep === "select" && CardTypeSelector}
+          {currentStep === "customize" && CardCustomizer}
+          {currentStep === "preview" && FullPreview}
+        </AnimatePresence>
+
+        {/* Hidden canvas for download */}
+        <canvas ref={canvasRef} className="hidden" />
+      </div>
     </div>
   );
 };

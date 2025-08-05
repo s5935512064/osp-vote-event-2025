@@ -60,6 +60,27 @@ class ApiClient {
     }
   }
 
+  async postForm<T>(endpoint: string, formData: FormData): Promise<T> {
+    try {
+      const response = await fetch(`${this.config.baseURL}${endpoint}`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${this.config.apiKey}`,
+        } as HeadersInit,
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("API POST Form Error:", error);
+      throw error;
+    }
+  }
+
   async put<T>(endpoint: string, data: any): Promise<T> {
     try {
       const response = await fetch(`${this.config.baseURL}${endpoint}`, {

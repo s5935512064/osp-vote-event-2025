@@ -1,0 +1,126 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getEventBySlug, getAllEvents } from '../../lib/eventsConfig';
+import PhotoGallery from "../../components/photo-gallery";
+import MothersDayCardComponent from '../../components/MothersDayCard';
+import { ArrowLeft, Home } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+export async function getStaticPaths() {
+  const events = getAllEvents();
+  return events.map((event) => ({
+    params: {
+      year: event.year,
+      slug: event.slug
+    },
+    props: { event }
+  }));
+}
+
+const { year, slug } = Astro.params;
+const event = getEventBySlug(year!, slug!);
+
+if (!event) {
+  return Astro.redirect('/404');
+}
+
+// Route to specific components based on event type
+const getEventComponent = (eventSlug: string) => {
+  switch (eventSlug) {
+    case 'mothers-day-activity':
+      return 'MothersDayCardCreator';
+    case 'pride-month-vote':
+      return 'PhotoGallery';
+    default:
+      return 'ComingSoon';
+  }
+};
+
+const componentType = getEventComponent(event.slug);
+
+const getEventMetaTags = (event: any, componentType: string) => {
+  const baseUrl = 'https://theoldsiam.co.th';
+  const eventUrl = `${baseUrl}${event.href}`;
+  
+  // สำหรับ Photo Gallery / Vote Events
+  if (componentType === 'PhotoGallery') {
+    return {
+      title: `We're Proud of You | The Old Siam Plaza`,
+      description:"ผ้าไหมไทย ผ่านความภาคภูมิใจของ The Old Siam Plaza ศูนย์การค้าผ้าไหมที่ใหญ่ที่สุดในประเทศ (Silk Market of Thailand) รวมผ้าไหมแท้ และผ้าไทยคุณภาพดีจากร้านค้ากว่า 170 ร้าน ซึ่งได้รับตรานกยูงพระราชทาน เพื่อรับรองเอกลักษณ์ และคุณภาพ",
+      keywords: `ผ้าไหมไทย, ผ้าไหมแท้, ผ้าไทยคุณภาพดี, ผ้าไหมที่ใหญ่ที่สุดในประเทศ, ผ้าไหมที่ได้รับตรานกยูงพระราชทาน, ผ้าไหมที่รับรองเอกลักษณ์, ผ้าไหมที่รับรองคุณภาพ , the old siam plaza, ดิโอลด์สยามพลาซ่าม โหวตชุดผ้าไหม`,
+      ogTitle: `We're Proud of You | The Old Siam Plaza`,
+      ogDescription: `ร่วมโหวตความงามของชุดผ้าไหมไทยภายใน ดิ โอลด์ สยาม พลาซ่า เพื่อสนับสนุนเอกลักษณ์ และอนุรักษ์สมบัติทางวัฒนธรรมไทย`,
+      ogImage: 'https://assets-manager.ssdapp.net/public/file/l87ebc7cef22u2e77h3izmo0',
+      ogUrl: "https://theoldsiam.co.th/event/2025/pride-month-vote",
+      twitterTitle: `We're Proud of You | The Old Siam Plaza`,
+      twitterDescription: `ร่วมโหวตความงามของชุดผ้าไหมไทยภายใน ดิ โอลด์ สยาม พลาซ่า เพื่อสนับสนุนเอกลักษณ์ และอนุรักษ์สมบัติทางวัฒนธรรมไทย`,
+    };
+  }
+  if (componentType === 'MothersDayCardCreator') {
+    return {
+      title: `12 สิงหาคมปีนี้ ให้ ดิโอลด์ สยาม พลาซ่า เป็นสื่อกลางแทนความรักและความรู้สึกอันแสนอบอุ่นที่คุณมีต่อคุณแม่`,
+      description: "สร้างการ์ดวันแม่สุดพิเศษตามสไตล์ของคุณเอง พร้อมข้อความอบอุ่น และแชร์ให้คนที่คุณรัก พร้อมกับกิจกรรมอื่นๆ อาทิเช่น workshop จัดดอกไม้ , บริจาคโลหิต เป็นต้น",
+      keywords: `การ์ดวันแม่, สร้างการ์ดวันแม่, ผ้าไหมไทย, วันแม่, ความกตัญญู, the old siam plaza, ดิโอลด์สยามพลาซ่า, mothers day card,กิจกรรมวันแม่`,
+      ogTitle: `12 สิงหาคมปีนี้ ให้ ดิโอลด์ สยาม พลาซ่า เป็นสื่อกลางแทนความรักและความรู้สึกอันแสนอบอุ่นที่คุณมีต่อคุณแม่`,
+      ogDescription: `สร้างการ์ดวันแม่สุดพิเศษตามสไตล์ของคุณเอง พร้อมข้อความอบอุ่น และแชร์ให้คนที่คุณรัก พร้อมกับกิจกรรมอื่นๆ อาทิเช่น workshop จัดดอกไม้ , บริจาคโลหิต เป็นต้น`,
+      ogImage: 'https://assets-manager.ssdapp.net/public/file/l87ebc7cef22u2e77h3izmo0',
+      ogUrl: "https://theoldsiam.co.th/event/2025/mothers-day-card",
+      twitterTitle: `12 สิงหาคมปีนี้ ให้ ดิโอลด์ สยาม พลาซ่า เป็นสื่อกลางแทนความรักและความรู้สึกอันแสนอบอุ่นที่คุณมีต่อคุณแม่`,
+      twitterDescription: `สร้างการ์ดวันแม่สุดพิเศษตามสไตล์ของคุณเอง พร้อมข้อความอบอุ่น และแชร์ให้คนที่คุณรัก พร้อมกับกิจกรรมอื่นๆ อาทิเช่น workshop จัดดอกไม้ , บริจาคโลหิต เป็นต้น`,
+    };
+  }
+  
+  // สำหรับ Mother's Day Card และ events อื่นๆ
+  return {
+    title: `${event.title} | The Old Siam Plaza`,
+    description: event.description,
+    keywords: `${event.tags?.join(', ')}, the old siam plaza`,
+    ogTitle: event.title,
+    ogDescription: event.description,
+    ogUrl: eventUrl,
+  };
+};
+
+const metaTags = getEventMetaTags(event, componentType);
+
+const url = Astro.url.pathname;
+
+
+
+---
+
+<Layout {...metaTags}>
+
+  <main class="flex-1 w-full">
+
+    <div class="fixed top-4 left-4  z-50 flex items-center gap-2">
+    
+      <a href="/" class=" bg-white/80 backdrop-blur-sm text-gray-700 px-3 md:px-4 py-2 rounded-lg shadow-md hover:bg-white/90 transition-colors duration-200 z-50 flex items-center gap-2 " >
+        <Home size={16} />
+        <span class="hidden sm:block">หน้าแรก</span>
+      </a>
+
+ 
+
+      <a class=" bg-white/80 backdrop-blur-sm text-gray-700 px-3 md:px-4 py-2 rounded-lg shadow-md hover:bg-white/90 transition-colors duration-200 z-50 flex items-center gap-2"  href={url}  >
+        <ArrowLeft size={16} />
+        <span class="hidden sm:block">ย้อนกลับ</span>
+      </a>
+    </div>
+
+    
+    {componentType === 'MothersDayCardCreator' && (
+
+       <div class="space-y-8 h-full ">
+          <div class="fixed inset-0 w-full h-full bg-[url('../assets/mothers-day-background.webp')] bg-cover bg-center bg-no-repeat z-[-20]"/>
+         <MothersDayCardComponent client:load />
+      </div>
+    )}
+
+    {componentType === 'PhotoGallery' && (
+      <div class="space-y-8 h-full">
+        <PhotoGallery client:load />
+      </div>
+    )}
+
+  </main>
+</Layout> 

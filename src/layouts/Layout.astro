@@ -2,6 +2,39 @@
 import '@/styles/global.css'
 import '@fontsource/permanent-marker';
 import '@fontsource/prompt';
+import { Image } from 'astro:assets';
+import LogoSSD from "@/assets/logo-ssd.webp";
+import OldSiamPlaza from "@/assets/OSP-Logo-W.png";
+import { FacebookBrowserWarning } from "@/components/FacebookBrowserWarning";
+import '../styles/fonts.css';
+import 'sweetalert2/src/sweetalert2.scss'
+
+interface Props {
+  title?: string;
+  description?: string;
+  keywords?: string;
+  ogTitle?: string;
+  ogDescription?: string;
+  ogImage?: string;
+  ogUrl?: string;
+  twitterTitle?: string;
+  twitterDescription?: string;
+  twitterImage?: string;
+}
+
+const { 
+  title = "Events | The Old Siam Plaza",
+  description = "กิจกรรมและอีเวนต์ต่างๆ ของ The Old Siam Plaza ศูนย์การค้าผ้าไหมที่ใหญ่ที่สุดในประเทศ (Silk Market of Thailand) ร่วมสัมผัสประสบการณ์และกิจกรรมพิเศษที่น่าสนใจ",
+  keywords = "events, กิจกรรม, อีเวนต์, ผ้าไหมไทย, ผ้าไหมแท้, ผ้าไทยคุณภาพดี, the old siam plaza, ดิโอลด์สยามพลาซ่า",
+  ogTitle = title,
+  ogDescription = description,
+  ogImage = "https://theoldsiam.co.th/image-og.jpg",
+  ogUrl = "https://theoldsiam.co.th/events",
+  twitterTitle = title,
+  twitterDescription = description,
+  twitterImage = ogImage
+} = Astro.props;
+
 
 const GA_TRACKING_ID = import.meta.env.VITE_GA_TRACKING_ID;
 
@@ -21,31 +54,233 @@ const GA_TRACKING_ID = import.meta.env.VITE_GA_TRACKING_ID;
 		  gtag('js', new Date());
 		
 		  gtag('config', GA_TRACKING_ID, {
-			page_path: '/event/2025/pride-month-vote',
+			page_path: '/event',
 		  });
 		</script>
 
 		<meta name="generator" content={Astro.generator} />
-		<title>We're Proud of You | The Old Siam Plaza</title>
-		<meta name="description" content="ผ้าไหมไทย ผ่านความภาคภูมิใจของ The Old Siam Plaza ศูนย์การค้าผ้าไหมที่ใหญ่ที่สุดในประเทศ (Silk Market of Thailand) รวมผ้าไหมแท้ และผ้าไทยคุณภาพดีจากร้านค้ากว่า 170 ร้าน ซึ่งได้รับตรานกยูงพระราชทาน เพื่อรับรองเอกลักษณ์ และคุณภาพ" />
-		<meta name="keywords" content="ผ้าไหมไทย, ผ้าไหมแท้, ผ้าไทยคุณภาพดี, ผ้าไหมที่ใหญ่ที่สุดในประเทศ, ผ้าไหมที่ได้รับตรานกยูงพระราชทาน, ผ้าไหมที่รับรองเอกลักษณ์, ผ้าไหมที่รับรองคุณภาพ , the old siam plaza, ดิโอลด์สยามพลาซ่าม โหวตชุดผ้าไหม" />
+		<title>{title}</title>
+		<meta name="description" content={description} />
+		<meta name="keywords" content={keywords} />
 
-		<meta property="og:title" content="We're Proud of You | The Old Siam Plaza" />
-		<meta property="og:description" content="ร่วมโหวตความงามของชุดผ้าไหมไทยภายใน ดิ โอลด์ สยาม พลาซ่า เพื่อสนับสนุนเอกลักษณ์ และอนุรักษ์สมบัติทางวัฒนธรรมไทย" />
-		<meta property="og:image" content="https://assets-manager.ssdapp.net/public/file/l87ebc7cef22u2e77h3izmo0" />
-		<meta property="og:url" content="https://theoldsiam.co.th/event/2025/pride-month-vote" />
+		<meta property="og:title" content={ogTitle} />
+		<meta property="og:description" content={ogDescription} />
+		<meta property="og:image" content={ogImage} />
+		<meta property="og:url" content={ogUrl} />
 		<meta property="og:type" content="website" />
+		<meta property="og:site_name" content="The Old Siam Plaza" />
 
 		<meta name="twitter:card" content="summary_large_image" />
-		<meta name="twitter:title" content="We're Proud of You | The Old Siam Plaza" />
-		<meta name="twitter:description" content="ร่วมโหวตความงามของชุดผ้าไหมไทยภายใน ดิ โอลด์ สยาม พลาซ่า เพื่อสนับสนุนเอกลักษณ์ และอนุรักษ์สมบัติทางวัฒนธรรมไทย" />
-		<meta name="twitter:image" content="https://assets-manager.ssdapp.net/public/file/l87ebc7cef22u2e77h3izmo0" />
+		<meta name="twitter:title" content={twitterTitle} />
+		<meta name="twitter:description" content={twitterDescription} />
+		<meta name="twitter:image" content={twitterImage} />
 		
 	</head>
-	<body class="bg-[#0a3254] flex flex-col items-center relative px-4 md:px-8  min-h-screen  ">
+	<body class="flex flex-col items-center relative  min-h-screen  bg-[#0a3254]">
 		<!-- <div class="w-full h-full fixed top-0 !z-[-10] bg-[url('../assets/38270.jpg')] bg-cover bg-no-repeat bg-center opacity-60"/> -->
-		<div class="w-full h-full fixed top-0 !z-[-10] bg-[url('../assets/pattern.webp')]  opacity-50 bg-contain bg-center bg-repeat"/>
-		<slot />
+
+		<header class="pt-4 md:pt-7 font-prompt z-10  flex justify-center items-center   max-w-screen-xl">
+			<a href="https://theoldsiam.co.th/" target="_blank">
+				<Image src={OldSiamPlaza} alt="The Old Siam Plaza Logo" class="w-32 sm:w-36 md:w-40"  />
+			</a>
+		</header>
+	
+	
+		<FacebookBrowserWarning client:load />
+
+
+		<div class="flex-1 flex flex-col items-center relative w-full px-4 md:px-8 font-prompt">
+			<slot />
+		</div>
+
+
+		<footer
+		class="w-full  text-white flex justify-center  relative z-10 py-2 !font-prompt px-4 md:px-8 "
+	  >
+		<div class="max-w-screen-xl w-full flex flex-col lg:flex-row gap-2 justify-between items-center">
+
+			<div class="w-fit space-x-3 flex flex-col lg:flex-row md:flex-col md:justify-between items-center gap-2 lg:gap-3 text-sm  lg:divide-x  lg:justify-start ">
+			  <div class="flex flex-col lg:flex-row items-center  gap-1 md:gap-2 pr-3">
+				<p class="text-sm">More channels to contact us</p>
+				<div class="flex items-center gap-2 mt-1 ">
+			
+				
+				<a
+				href="https://www.facebook.com/Theoldsiamshoppingplaza"
+				  target="_blank"
+				  rel="noopener noreferrer"
+				  aria-label="facebook_osp"
+				>
+				  <svg
+					xmlns="http://www.w3.org/2000/svg"
+					width="32.84"
+					height="32.84"
+					viewBox="0 0 32.84 32.84"
+					class="cursor-pointer"
+				  >
+					<circle
+					  id="Ellipse_9"
+					  data-name="Ellipse 9"
+					  cx="15.67"
+					  cy="15.67"
+					  r="15.67"
+					  transform="translate(0.75 0.75)"
+					  fill="none"
+					  stroke="#FFF"
+					  stroke-width="1.5"
+					/>
+					<path
+					  id="Path_548020"
+					  data-name="Path 548020"
+					  d="M89.224,61.228h-2.91v-6.2H84.86V52.647h1.454V51.209c0-1.947.821-3.106,3.153-3.106h1.941v2.388H90.2c-.909,0-.969.334-.969.956v1.194h2.194l-.255,2.389H89.224Z"
+					  transform="translate(-71.834 -38.578)"
+					  fill="#FFF"
+					/>
+				  </svg>
+				</a>
+		
+				
+				<a
+					href="https://www.instagram.com/theoldsiamplaza_/"
+				  target="_blank"
+				  rel="noopener noreferrer"
+				  aria-label="instagram_osp"
+				>
+				  <svg
+					xmlns="http://www.w3.org/2000/svg"
+					width="32.84"
+					height="32.84"
+					viewBox="0 0 32.84 32.84"
+				  >
+					<circle
+					  id="Ellipse_9"
+					  data-name="Ellipse 9"
+					  cx="15.67"
+					  cy="15.67"
+					  r="15.67"
+					  transform="translate(0.75 0.75)"
+					  fill="none"
+					  stroke="#FFF"
+					  stroke-width="1.5"
+					/>
+		
+					<svg
+					  xmlns="http://www.w3.org/2000/svg"
+					  width="26"
+					  height="24"
+					  viewBox="0 0 32.84 32.84"
+					>
+					  <path
+						d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"
+						fill="#FFF"
+						transform="translate(9 10)"
+					  />
+					</svg>
+				  </svg>
+				</a>
+		
+				<a
+				href="https://lin.ee/QiNpaK9"
+				  target="_blank"
+				  rel="noopener noreferrer"
+				  aria-label="line_osp"
+				>
+				  <svg
+					xmlns="http://www.w3.org/2000/svg"
+					width="33.492"
+					height="33.499"
+					viewBox="0 0 33.492 33.499"
+					class="cursor-pointer"
+				  >
+					<path
+					  id="Path_548021"
+					  data-name="Path 548021"
+					  d="M214.5,70.99h0a16,16,0,1,1,16-16,16.2,16.2,0,0,1-6.251,12.693,30.624,30.624,0,0,1-4.459,2.436A26.441,26.441,0,0,1,214.5,71"
+					  transform="translate(-197.758 -38.248)"
+					  fill="none"
+					  stroke="#FFF"
+					  stroke-width="1.5"
+					/>
+					<path
+					  id="Path_548022"
+					  data-name="Path 548022"
+					  d="M213.915,65.158a.356.356,0,0,1-.288-.113.785.785,0,0,1-.054-.6v-.019l.157-.912a2.076,2.076,0,0,0-.034-.966c-.118-.293-.577-.448-.941-.526-5.171-.685-8.921-4.277-8.921-8.54,0-4.773,4.786-8.657,10.669-8.657s10.666,3.884,10.666,8.657a7.749,7.749,0,0,1-2.286,5.328,34.211,34.211,0,0,1-8.38,6.192,1.622,1.622,0,0,1-.588.151m4.7-13.978a.206.206,0,0,0-.2.2v4.651a.206.206,0,0,0,.2.206h3a.2.2,0,0,0,.2-.2v-.756a.2.2,0,0,0-.2-.2h-2.037v-.784h2.037a.2.2,0,0,0,.2-.2v-.757a.2.2,0,0,0-.2-.2h-2.037v-.784h2.037a.205.205,0,0,0,.2-.2v-.756a.206.206,0,0,0-.2-.2h-3Zm-4.19,2.1h0l2.129,2.876a.247.247,0,0,0,.052.05l.016.008.015.007h.032a.177.177,0,0,0,.056.008h.752a.206.206,0,0,0,.206-.2V51.367a.206.206,0,0,0-.206-.2h-.755a.2.2,0,0,0-.2.2v2.764l-2.131-2.876-.015-.022-.014-.014-.015-.014-.017-.009h-.852a.2.2,0,0,0-.2.2v4.654a.2.2,0,0,0,.2.2h.757a.2.2,0,0,0,.2-.2V53.291Zm-2.852-2.1a.2.2,0,0,0-.2.2v4.654a.2.2,0,0,0,.2.2h.757a.2.2,0,0,0,.2-.2V51.384a.2.2,0,0,0-.2-.2Zm-4.043,0a.2.2,0,0,0-.2.2v4.651a.2.2,0,0,0,.2.206h3a.2.2,0,0,0,.2-.2v-.756a.2.2,0,0,0-.2-.2h-2.037V51.384a.206.206,0,0,0-.206-.2Z"
+					  transform="translate(-197.758 -38.248)"
+					  fill="#FFF"
+					/>
+				  </svg>
+				</a>
+		
+					<a
+				href="https://www.tiktok.com/@theoldsiamplaza"
+				  target="_blank"
+				  rel="noopener noreferrer"
+				  aria-label="tiktok_osp"
+				>
+				  <svg
+					xmlns="http://www.w3.org/2000/svg"
+					width="34" 
+					height="34"
+					viewBox="0 0 34 34"
+					class="cursor-pointer"
+				  >
+					<path
+					  d="M16.5 0.5C25.0604 0.5 32 7.43959 32 16C32 24.5604 25.0604 31.5 16.5 31.5C7.93959 31.5 1 24.5604 1 16C1 7.43959 7.93959 0.5 16.5 0.5Z"
+					  fill="none"
+					  stroke="#FFF" 
+					  stroke-width="1.5"
+					/>
+					<path
+					  d="M17.5 8.5h2.17c.24.97.72 1.61 1.94 2.5.5.34 1.39.5 2.39.5v2c-1.04 0-2.54-.4-3.5-1.5l-.5-.5v7c0 2.76-2.24 5-5 5s-5-2.24-5-5 2.24-5 5-5h1v2h-1c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3V8.5z"
+					  fill="#FFF"
+					/>
+				  </svg>
+		
+				</a>
+				
+				</div>
+			  </div>
+		
+			</div>
+		
+			<div class="flex items-center space-x-3 justify-end lg:divide-x w-fit flex-col lg:flex-row  ">
+			
+				<a
+				href={"https://siamsindhorn.com/"}
+				  target="_blank"
+				  rel="noopener noreferrer"
+				  aria-label="goto_website"
+				  class="h-6 w-28 relative  pr-3 hidden lg:block"
+				>
+				<Image src={LogoSSD} alt="siam sindhorn logo" 	style={{
+					objectFit: "contain",
+					objectPosition: "center",
+				  }}
+				  class="w-full h-full"  />
+			
+				</a>
+		  
+				<p class="text-center text-sm ">
+				  Copyright © 2025
+				  
+				  <a
+				  href={"https://siamsindhorn.com/"}
+					target="_blank"
+					rel="noopener noreferrer"
+					aria-label="Siam Sindhorn Co., Ltd."
+					class="font-medium cursor-pointer mr-1 italic"
+				  >
+					Siam Sindhorn Co., Ltd.
+				  </a>
+				  All rights reserved.
+				</p>
+			
+			</div>
+		</div>
+
+		</footer>
+
+
 	</body>
 </html>
 

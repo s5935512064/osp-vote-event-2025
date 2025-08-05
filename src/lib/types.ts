@@ -127,3 +127,28 @@ export interface LocalUserActions {
   sharedSubmissions: string[];
   lastUpdated: string;
 }
+
+// Event Types for Homepage Cards
+export interface Event {
+  id: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  href: string;
+  status: "active" | "coming-soon" | "ended";
+  startDate?: string;
+  endDate?: string;
+  tags?: string[];
+  image?: string;
+  slug: string;
+  year: string;
+}
+
+export interface EventCardProps {
+  event: Event;
+}
+
+export interface EventPageParams {
+  year: string;
+  slug: string;
+}

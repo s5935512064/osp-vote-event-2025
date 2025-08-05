@@ -4,6 +4,13 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  --breakpoint-xs: 380px;
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -261,4 +268,72 @@
   );
   background-size: 200% 100%;
   animation: rainbow-gradient 4s linear infinite;
+}
+
+/* Hide elements when viewport height is 900px or less */
+@media (max-height: 895px) and (max-width: 380px) {
+  .h-900-hidden {
+    display: none !important;
+  }
+}
+
+/* Hide scrollbars */
+.hide-scrollbar {
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+  scrollbar-width: none; /* Firefox */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Safari and Chrome */
+}
+
+/* Global scrollbar hiding for all elements */
+* {
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+  scrollbar-width: none; /* Firefox */
+}
+
+*::-webkit-scrollbar {
+  display: none; /* Safari and Chrome */
+}
+
+.font-tintin {
+  font-family: "fonttintin", sans-serif !important;
+}
+
+.clip-path-heart {
+  clip-path: path(
+    "M50 15 C25 -5, 0 15, 0 40 C0 65, 50 100, 50 100 C50 100, 100 65, 100 40 C100 15, 75 -5, 50 15 Z"
+  );
+}
+
+.card-preview-container.exporting {
+  position: relative !important;
+  transform: none !important;
+  animation: none !important;
+  transition: none !important;
+}
+
+.card-preview-container.exporting * {
+  animation: none !important;
+  transition: none !important;
+  transform: none !important;
+}
+
+/* ตรวจสอบว่า element อยู่ใน viewport */
+.card-preview-container {
+  position: relative;
+  z-index: 1;
+  background: white;
+}
+
+/* เพิ่ม CSS สำหรับ mobile drag */
+.card-preview-container * {
+  touch-action: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }

@@ -10,7 +10,10 @@ let redirectUrl = '/event/2025/pride-month-vote';
 const trackingParams = new URLSearchParams();
 ['utm_source', 'utm_medium', 'utm_campaign', 'ref', 'source', 'lang'].forEach(param => {
   if (searchParams.has(param)) {
-    trackingParams.set(param, searchParams.get(param)!);
+    const paramValue = searchParams.get(param);
+    if (paramValue !== null) {
+      trackingParams.set(param, paramValue);
+    }
   }
 });
 
@@ -83,7 +86,10 @@ if (trackingParams.toString()) {
         
         validParams.forEach(param => {
           if (urlParams.has(param)) {
-            preservedParams.set(param, urlParams.get(param));
+            const paramValue = urlParams.get(param);
+            if (paramValue !== null) {
+              preservedParams.set(param, paramValue);
+            }
           }
         });
         

@@ -8,6 +8,11 @@ export async function GET() {
       <changefreq>monthly</changefreq>
       <priority>0.8</priority>
     </url>
+    <url>
+      <loc>https://theoldsiam.co.th/event/2025/mothers-day-activity</loc>
+      <changefreq>monthly</changefreq>
+      <priority>0.8</priority>
+    </url>
   </urlset>`;
 
   return new Response(xml, {

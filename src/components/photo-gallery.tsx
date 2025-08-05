@@ -198,6 +198,8 @@ const PhotoGallery = () => {
 
   return (
     <>
+      <div className="w-full h-full fixed inset-0 !z-[-10] bg-[url('../assets/pattern.webp')]  opacity-50 bg-contain bg-center bg-repeat" />
+
       <div className="flex flex-col gap-2 items-center justify-center mb-4 -mt-2">
         <GalleryHeader deviceType="desktop" />
         {!hasVoted && isInitialized && (

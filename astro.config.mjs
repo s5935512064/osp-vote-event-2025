@@ -9,8 +9,8 @@ import sitemap from '@astrojs/sitemap';
 const env = loadEnv(process.env.NODE_ENV || 'development', process.cwd(), '');
 
 export default defineConfig({
-  base: env.NODE_ENV === 'production' ? '/event/2025/pride-month-vote' : '/',
-  site: 'https://theoldsiam.co.th/event/2025/pride-month-vote',
+  base: env.NODE_ENV === 'production' ? '/event' : '/',
+  site: 'https://theoldsiam.co.th/event',
   integrations: [
     mdx(),
     sitemap(),
@@ -31,7 +31,15 @@ export default defineConfig({
       'import.meta.env.VITE_GA_TRACKING_ID': JSON.stringify(env.VITE_GA_TRACKING_ID || ''),
     },
     preview: {
-      allowedHosts: ['theoldsiam.co.th', 'www.theoldsiam.co.th', 'localhost', '127.0.0.1']
+      allowedHosts: ['assets-manager.ssdapp.net', 'theoldsiam.co.th', 'www.theoldsiam.co.th', 'localhost', '127.0.0.1']
+    },
+    server: {
+      cors: {
+        origin: process.env.NODE_ENV === 'development'
+          ? true
+          : ['https://theoldsiam.co.th'],
+        credentials: true
+      }
     }
   },
 
