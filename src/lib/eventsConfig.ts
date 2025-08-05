@@ -8,7 +8,7 @@ export const events: Event[] = [
     subtitle: "ร่วมแสดงความรักและความกตัญญูต่อคุณแม่",
     description:
       "12 สิงหาคมปีนี้ ให้ ดิโอลด์ สยาม พลาซ่า เป็นสื่อกลางแทนความรักและความรู้สึกอันแสนอบอุ่นที่คุณมีต่อคุณแม่ ร่วมกิจกรรมพิเศษและชมคอลเลกชันผ้าไหมไทยสุดพิเศษ พร้อมรับของที่ระลึกสำหรับคุณแม่ที่รัก",
-    href: "/2025/mothers-day-activity",
+    href: "/event/2025/mothers-day-activity",
     image: MothersDayImage,
     status: "active",
     startDate: "2025-08-08",
@@ -29,10 +29,10 @@ export const events: Event[] = [
     title: "The Old Siam: We're Proud of You",
     subtitle: "ผ้าไหมไทยผ่านความภาคภูมิใจของ ดิ โอลด์ สยาม",
     image:
-      "https://res.cloudinary.com/dndcgytjh/image/upload/v1752777677/ejowcreczyfw5ui42ztj.webp",
+      "https://assets-manager.ssdapp.net/public/file/ppmfyud6wyaj8fjuvz4koui7",
     description:
       "ร่วมโหวตความงามของชุดผ้าไหมไทยภายใน ดิ โอลด์ สยาม พลาซ่า เพื่อสนับสนุนเอกลักษณ์ และอนุรักษ์สมบัติทางวัฒนธรรมไทย",
-    href: "/2025/pride-month-vote",
+    href: "/event/2025/pride-month-vote",
     status: "active",
     startDate: "2025-07-01",
     endDate: "2025-08-17",
