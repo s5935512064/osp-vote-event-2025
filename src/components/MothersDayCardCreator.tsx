@@ -400,7 +400,6 @@ const MothersDayCardCreator: React.FC<MothersDayCardCreatorProps> = ({
 
   const handleSizeChange = useCallback(
     (elementId: string, newSize: ElementSize) => {
-      console.log(elementId, newSize, "newSize");
       setElementSizes((prev) => ({
         ...prev,
         [elementId]: newSize,

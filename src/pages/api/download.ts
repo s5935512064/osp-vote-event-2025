@@ -25,7 +25,9 @@ export const GET: APIRoute = async ({ request, url }) => {
   // Get bearer token
   const authHeader = request.headers.get("Authorization");
   const token =
-    authHeader?.replace("Bearer ", "") || import.meta.env.VITE_DOWNLOAD_TOKEN;
+    authHeader?.replace("Bearer ", "") ||
+    import.meta.env.VITE_DOWNLOAD_TOKEN ||
+    "bN8FEA1vBJSFoceM70hnt779K76BUvzX5HB9vyL6ys0=";
 
   if (!fileUrl) {
     return new Response(
