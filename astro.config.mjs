@@ -5,7 +5,7 @@ import { loadEnv } from "vite";
 import mdx from '@astrojs/mdx';
 import partytown from '@astrojs/partytown'
 import sitemap from '@astrojs/sitemap';
-import netlify from '@astrojs/netlify';
+import node from '@astrojs/node';
 
 const env = loadEnv(process.env.NODE_ENV || 'development', process.cwd(), '');
 
@@ -21,8 +21,8 @@ export default defineConfig({
       },
     }),
   ],
-  adapter: netlify({
-    experimentalStaticHeaders: true
+  adapter: node({
+    mode: 'standalone'
   }),
   integrations: [react({
     experimentalReactChildren: true,
