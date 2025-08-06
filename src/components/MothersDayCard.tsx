@@ -240,7 +240,6 @@ const MothersDayCardComponent: React.FC<MothersDayCardProps> = ({}) => {
 
   const getCardById = async (cardId: string) => {
     const card = await MothersDayCardService.getCardById(cardId);
-    console.log(card, "card");
     setCardData(card);
   };
 
@@ -249,11 +248,12 @@ const MothersDayCardComponent: React.FC<MothersDayCardProps> = ({}) => {
     const urlParams = new URLSearchParams(window.location.search);
     const createCard = urlParams.get("createcard");
     const cardId = urlParams.get("id");
+
     if (createCard === "true") {
       setIsCardCreatorOpen(true);
       setCardId(null);
     } else if (cardId) {
-      setIsCardCreatorOpen(false);
+      setIsCardCreatorOpen(true);
       setCardId(cardId);
       getCardById(cardId);
     }
@@ -315,7 +315,10 @@ const MothersDayCardComponent: React.FC<MothersDayCardProps> = ({}) => {
             transition={animations.cardCreator.transition}
           >
             <div className="relative ">
-              <MothersDayCardCreator />
+              <MothersDayCardCreator
+                isPreview={cardId != null && cardData != null}
+                fetchCardData={cardData}
+              />
             </div>
           </motion.div>
         )}

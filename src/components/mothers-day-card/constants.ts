@@ -11,7 +11,7 @@ export const CARD_TYPES: CardType[] = [
     id: "gentle-bloom",
     name: "อ้อมใจแห่งรักแท้ (Unfading Warmth)",
     coverImage:
-      "https://assets-manager.ssdapp.net/public/file/cbp2yyevr95ohw7ccuj69ims",
+      "https://assets-manager.ssdapp.net/public/file/n2af4rms0iaqsh74q8b3xgnk",
     messageImage: CardType1.src,
     description:
       "รักแท้…ไม่ต้องพูดมาก แค่มีแม่อยู่ตรงนั้น…ก็เพียงพอแล้ว มาร่วมเติมเต็มความทรงจำแห่งความอบอุ่นในวันแม่ ด้วยหัวใจที่เปล่งประกาย ที่ ดิ โอลด์ สยาม",
@@ -30,7 +30,7 @@ export const CARD_TYPES: CardType[] = [
     id: "white-grace",
     name: "ความอ่อนโยนบริสุทธิ์ (Pure Tenderness)",
     coverImage:
-      "https://assets-manager.ssdapp.net/public/file/ks7ohcgxcnxrdqp4q42ajjy8",
+      "https://assets-manager.ssdapp.net/public/file/h9ytals9mwcs5viqq16e4w5e",
     messageImage: CardType2.src,
     description:
       "เมื่อคำว่ารักไม่ต้องมีเงื่อนไข… ความรักของแม่ก็เปรียบเสมือนกลีบดอกไม้สีขาวบริสุทธิ์ ที่โอบกอดเราด้วยความอ่อนโยนไม่เปลี่ยนแปลง ร่วมบอกรักคุณแม่ด้วยหัวใจที่บริสุทธิ์ที่สุด ที่ ดิ โอลด์ สยาม",
@@ -49,7 +49,7 @@ export const CARD_TYPES: CardType[] = [
     id: "blooming-devotion",
     name: "ความรักที่เบ่งบานไม่มีที่สิ้นสุด (Everlasting Bloom of Love)",
     coverImage:
-      "https://assets-manager.ssdapp.net/public/file/tpliugec57r589f7k7bexjtk",
+      "https://assets-manager.ssdapp.net/public/file/sj45qy3rxz80bnw85kgmwqpz",
     messageImage: CardType3.src,
     description:
       "แม่คือดอกไม้แห่งรัก ที่เบ่งบานอยู่ในใจเราทุกวันไม่ว่าเวลาจะผ่านไปนานแค่ไหน… ขอเชิญร่วมแบ่งปันช่วงเวลาแสนอบอุ่นในวันแม่ กับความรักที่ไม่มีวันโรยรา ที่ ดิ โอลด์ สยาม",
@@ -68,7 +68,7 @@ export const CARD_TYPES: CardType[] = [
     id: "timeless-affection",
     name: "ความรักที่ไม่มีวันเก่า (Elegant & Eternal)",
     coverImage:
-      "https://assets-manager.ssdapp.net/public/file/up4mj3qii9ppkfb9tgvuk5fr",
+      "https://assets-manager.ssdapp.net/public/file/dcw3dbylu5hwlcpc4gqrhn4j",
     messageImage: CardType4.src,
     description:
       "จากวันแรกจนวันนี้ ความรักของแม่ยังคงมั่นคงและงดงามเสมอ เหมือนดอกไม้ที่ผลิบานด้วยความหมายอันลึกซึ้ง ร่วมเฉลิมฉลองวันแม่ไปกับบรรยากาศแสนอบอุ่น ณ ดิ โอลด์ สยาม",
@@ -87,7 +87,7 @@ export const CARD_TYPES: CardType[] = [
     id: "blue-serenity",
     name: "สายลมแห่งความสงบ (Calmness of Love)",
     coverImage:
-      "https://assets-manager.ssdapp.net/public/file/csvwqvj60faznvugfe702nsd",
+      "https://assets-manager.ssdapp.net/public/file/j16xj08qvru0d4c9c0w8yw90",
     messageImage: CardType5.src,
     description:
       "ในอ้อมกอดของแม่...เรารู้สึกปลอดภัย ราวกับอยู่ท่ามกลางทุ่งดอกไม้และผีเสื้อในวันที่อากาศแสนดี มอบความรักกลับคืนแด่ผู้หญิงที่ยิ่งใหญ่ที่สุดในชีวิต ที่ ดิ โอลด์ สยาม",

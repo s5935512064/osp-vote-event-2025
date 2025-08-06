@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { type DragEndEvent } from "@dnd-kit/core";
 import {
@@ -8,6 +8,10 @@ import {
   Printer,
   Loader2,
   Trash2,
+  AlignCenter,
+  AlignLeft,
+  AlignRight,
+  Copy,
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { ProgressSteps } from "./mothers-day-card/ProgressSteps";
@@ -19,16 +23,32 @@ import type { CardData, ElementSize, StepType } from "./mothers-day-card/types";
 import {
   MothersDayCardService,
   type MothersDayCardEntity,
+  type MothersDayCard,
 } from "@/lib/motherdaysService";
-import { downloadFile } from "../lib/download";
-
+import {
+  FacebookShareButton,
+  LineShareButton,
+  TwitterShareButton,
+  FacebookIcon,
+  LineIcon,
+  XIcon,
+} from "react-share";
+import pkg from "file-saver";
+const { saveAs } = pkg;
 //@ts-ignore
 import domtoimage from "dom-to-image-more";
 
-// เพิ่ม import สำหรับ Sweet Alert
 import Swal from "sweetalert2";
 
-const MothersDayCardCreator: React.FC = () => {
+interface MothersDayCardCreatorProps {
+  isPreview?: boolean;
+  fetchCardData?: MothersDayCard | null;
+}
+
+const MothersDayCardCreator: React.FC<MothersDayCardCreatorProps> = ({
+  isPreview,
+  fetchCardData,
+}) => {
   const [cardData, setCardData] = useState<CardData>({
     cardType: CARD_TYPES[0],
     coverText: "Happy Mother's Day",
@@ -62,8 +82,11 @@ const MothersDayCardCreator: React.FC = () => {
 
   const [isUploading, setIsUploading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false); // เพิ่ม state สำหรับการ submit
+  const [textMessageAlign, setTextMessageAlign] = useState<
+    "left" | "center" | "right"
+  >(cardData.cardType.textPosition.textAlign as any);
 
-  const { canvasRef, printCard, downloadCard } = useCardCanvas({
+  const { canvasRef } = useCardCanvas({
     cardData,
     dragPositions,
     elementSizes,
@@ -404,6 +427,59 @@ const MothersDayCardCreator: React.FC = () => {
     []
   );
 
+  const handleLoad = async (path: string, name: string) => {
+    const downloadId = path.split("/").pop();
+    const downloadPath = `https://assets-manager.ssdapp.net/api/download/${downloadId}`;
+
+    const response = await fetch(
+      `/api/download?url=${downloadPath}&filename=${name}`
+    );
+
+    const blob = await response.blob();
+    saveAs(blob, name, { autoBom: true });
+  };
+
+  const printCard = async () => {
+    const printJS = (await import("print-js")).default;
+    const downloadIdCover = cardResponse?.coverImage.split("/").pop();
+    const downloadPathCover = `https://assets-manager.ssdapp.net/api/download/${downloadIdCover}`;
+    const downloadIdCard = cardResponse?.cardImage.split("/").pop();
+    const downloadPathCard = `https://assets-manager.ssdapp.net/api/download/${downloadIdCard}`;
+
+    const [responseCover, responseCard] = await Promise.all([
+      fetch(`/api/download?url=${downloadPathCover}&filename=${name}`),
+      fetch(`/api/download?url=${downloadPathCard}&filename=${name}`),
+    ]);
+    const blobCover = await responseCover.blob();
+    const blobCard = await responseCard.blob();
+    const blobUrlCover = URL.createObjectURL(blobCover);
+    const blobUrlCard = URL.createObjectURL(blobCard);
+
+    printJS({
+      printable: [blobUrlCover, blobUrlCard],
+      type: "image",
+      showModal: true,
+      imageStyle: "width:100%;margin:0px;padding:0px;",
+    });
+  };
+
+  useEffect(() => {
+    if (fetchCardData && isPreview) {
+      const previewCardData = {
+        id: fetchCardData.id,
+        cardType: fetchCardData.data.cardType,
+        authorName: fetchCardData.data.authorName,
+        messageText: fetchCardData.data.messageText,
+        coverImage: fetchCardData.data.coverImage,
+        cardImage: fetchCardData.data.cardImage,
+        createdAt: fetchCardData.createdAt,
+        updatedAt: fetchCardData.updatedAt,
+      };
+      setCardResponse(previewCardData as MothersDayCardEntity);
+      setCurrentStep("preview");
+    }
+  }, [fetchCardData]);
+
   // Components
   const CardTypeSelector = (
     <motion.div
@@ -470,21 +546,67 @@ const MothersDayCardCreator: React.FC = () => {
         {/* Form Section */}
         <div className="gap-2 grid grid-cols-1 md:grid-cols-2 relative h-full">
           <div className="space-y-2 relative">
-            <label className="block text-sm font-medium text-gray-700">
-              ข้อความอวยพร
-            </label>
-            <textarea
-              value={cardData.messageText}
-              onChange={(e) => handleInputChange("messageText", e.target.value)}
-              onKeyDown={handleKeyDown}
-              rows={6}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white focus:border-transparent resize-none"
-              placeholder="เขียนข้อความถึงคุณแม่..."
-              style={{
-                transform: "translateZ(0)",
-                willChange: "auto",
-              }}
-            />
+            <div className="flex items-center gap-2">
+              <label className="block text-sm font-medium text-gray-700">
+                ข้อความอวยพร
+              </label>
+            </div>
+
+            <div className="relative">
+              <div className="absolute bottom-5 right-5 z-5 gap-1 flex items-center">
+                <Button
+                  type="button"
+                  size={"sm"}
+                  onClick={() => setTextMessageAlign("left")}
+                  className={`px-3 py-1 text-xs rounded-full border transition-colors ${
+                    textMessageAlign === "left"
+                      ? "bg-[#0a3254] text-white border-[#0a3254]"
+                      : "bg-white text-gray-600 border-gray-300 hover:border-[#0a3254] hover:text-white"
+                  }`}
+                >
+                  <AlignLeft size={14} />
+                </Button>
+                <Button
+                  type="button"
+                  size={"sm"}
+                  onClick={() => setTextMessageAlign("center")}
+                  className={`px-3 py-1 text-xs rounded-full border transition-colors ${
+                    textMessageAlign === "center"
+                      ? "bg-[#0a3254] text-white border-[#0a3254]"
+                      : "bg-white text-gray-600 border-gray-300 hover:border-[#0a3254] hover:text-white"
+                  }`}
+                >
+                  <AlignCenter size={14} />
+                </Button>
+                <Button
+                  type="button"
+                  size={"sm"}
+                  onClick={() => setTextMessageAlign("right")}
+                  className={`px-3 py-1 text-xs rounded-full border transition-colors ${
+                    textMessageAlign === "right"
+                      ? "bg-[#0a3254] text-white border-[#0a3254]"
+                      : "bg-white text-gray-600 border-gray-300 hover:border-[#0a3254] hover:text-white"
+                  }`}
+                >
+                  <AlignRight size={14} />
+                </Button>
+              </div>
+
+              <textarea
+                value={cardData.messageText}
+                onChange={(e) =>
+                  handleInputChange("messageText", e.target.value)
+                }
+                onKeyDown={handleKeyDown}
+                rows={6}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white focus:border-transparent resize-none"
+                placeholder="เขียนข้อความถึงคุณแม่..."
+                style={{
+                  transform: "translateZ(0)",
+                  willChange: "auto",
+                }}
+              />
+            </div>
           </div>
 
           <div className="space-y-2">
@@ -565,6 +687,7 @@ const MothersDayCardCreator: React.FC = () => {
           <h3 className="text-gray-800">ตัวอย่างการ์ด</h3>
           <div style={{ transform: "translateZ(0)", willChange: "auto" }}>
             <CardPreview
+              textMessageAlign={textMessageAlign}
               cardData={cardData}
               dragPositions={dragPositions}
               elementSizes={elementSizes}
@@ -593,18 +716,18 @@ const MothersDayCardCreator: React.FC = () => {
               className="w-full h-full object-cover"
             />
             <div className="flex justify-center gap-4">
-              {/* <Button
+              <Button
                 type="button"
-                onClick={() => printCardFromUrl(cardResponse.coverImage)}
+                onClick={printCard}
                 className="bg-pink-500 hover:bg-pink-600 text-white px-8 py-3 rounded-lg flex items-center gap-2"
               >
                 <Printer size={16} />
                 พิมพ์การ์ด
-              </Button> */}
+              </Button>
               <Button
                 type="button"
                 onClick={() =>
-                  downloadFile(
+                  handleLoad(
                     cardResponse.coverImage,
                     `mothers-day-card-${Date.now()}.png`
                   )
@@ -625,18 +748,18 @@ const MothersDayCardCreator: React.FC = () => {
             />
 
             <div className="flex justify-center gap-4">
-              {/* <Button
+              <Button
                 type="button"
-                onClick={() => printCardFromUrl(cardResponse.cardImage)}
+                onClick={printCard}
                 className="bg-pink-500 hover:bg-pink-600 text-white px-8 py-3 rounded-lg flex items-center gap-2"
               >
                 <Printer size={16} />
                 พิมพ์การ์ด
-              </Button> */}
+              </Button>
               <Button
                 type="button"
                 onClick={() =>
-                  downloadFile(
+                  handleLoad(
                     cardResponse.cardImage,
                     `mothers-day-card-${Date.now()}.png`
                   )
@@ -650,6 +773,67 @@ const MothersDayCardCreator: React.FC = () => {
           </div>
         </div>
       )}
+
+      <div className="bg-white/75 rounded-xl p-6 border ">
+        <h3 className="text-xl font-semibold text-gray-800 mb-4 text-center">
+          แชร์การ์ดวันแม่ของคุณ
+        </h3>
+        <p className="text-gray-600 text-center mb-6">
+          แบ่งปันความรักที่มีต่อคุณแม่ให้เพื่อนๆ ได้เห็น
+        </p>
+
+        <div className="flex justify-center gap-4">
+          <Button
+            type="button"
+            onClick={() => {
+              navigator.clipboard.writeText(
+                `https://theoldsiam.co.th/event/2025/mothers-day-activity?id=${cardResponse?.id}`
+              );
+              Swal.fire({
+                title: "คัดลอกลิงค์แล้ว",
+                icon: "success",
+                timer: 1500,
+              });
+            }}
+            className="bg-gray-400 hover:bg-gray-500 text-white px-8 py-3 rounded-full flex items-center gap-2 size-12"
+          >
+            <Copy size={48} />
+          </Button>
+          {/* Facebook Share */}
+          <FacebookShareButton
+            url={"https://theoldsiam.co.th/event/2025/mothers-day-activity"}
+            hashtag="#วันแม่ #TheOldSiamPlaza #การ์ดวันแม่"
+            className="hover:scale-110 transition-transform duration-200"
+          >
+            <FacebookIcon size={48} round />
+          </FacebookShareButton>
+
+          {/* Line Share */}
+          <LineShareButton
+            url={"https://theoldsiam.co.th/event/2025/mothers-day-activity"}
+            title={`ในโอกาสวันแม่ 12 สิงหาคมปีนี้ ให้ ดิ โอลด์ สยาม พลาซ่า เป็นสื่อกลางแทนความรักและความรู้สึกอันแสนอบอุ่นที่คุณมีต่อคุณแม่`}
+            className="hover:scale-110 transition-transform duration-200"
+          >
+            <LineIcon size={48} round />
+          </LineShareButton>
+
+          {/* X (Twitter) Share */}
+          <TwitterShareButton
+            url={"https://theoldsiam.co.th/event/2025/mothers-day-activity"}
+            title={`ในโอกาสวันแม่ 12 สิงหาคมปีนี้ ให้ ดิ โอลด์ สยาม พลาซ่า เป็นสื่อกลางแทนความรักและความรู้สึกอันแสนอบอุ่นที่คุณมีต่อคุณแม่`}
+            hashtags={["วันแม่", "TheOldSiamPlaza", "การ์ดวันแม่"]}
+            className="hover:scale-110 transition-transform duration-200"
+          >
+            <XIcon size={48} round />
+          </TwitterShareButton>
+        </div>
+
+        <div className="text-center mt-4">
+          <p className="text-sm text-gray-500">
+            คลิกที่ไอคอนเพื่อแชร์การ์ดของคุณ
+          </p>
+        </div>
+      </div>
     </motion.div>
   );
 
@@ -657,7 +841,7 @@ const MothersDayCardCreator: React.FC = () => {
     <div className="w-full" style={{ overflow: "hidden" }}>
       <div className="mx-auto px-4 mb-10">
         {/* Header */}
-        <div className="text-center md:my-4">
+        <div className="text-center mb-4 md:my-4">
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#0a3254] mb-2">
             สร้างการ์ดวันแม่
           </h1>

@@ -12,7 +12,7 @@ export const ProgressSteps: React.FC<ProgressStepsProps> = ({
   const steps = [
     { id: "select", label: "เลือกการ์ด", icon: Heart },
     { id: "customize", label: "ปรับแต่ง", icon: Sparkles },
-    { id: "preview", label: "ดาวน์โหลดการ์ด", icon: Flower2 },
+    { id: "preview", label: "ดาวน์โหลด", icon: Flower2 },
   ];
 
   return (

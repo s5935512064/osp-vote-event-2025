@@ -5,11 +5,12 @@ import { loadEnv } from "vite";
 import mdx from '@astrojs/mdx';
 import partytown from '@astrojs/partytown'
 import sitemap from '@astrojs/sitemap';
+import netlify from '@astrojs/netlify';
 
 const env = loadEnv(process.env.NODE_ENV || 'development', process.cwd(), '');
 
 export default defineConfig({
-  base: env.NODE_ENV === 'production' ? '/event' : '/',
+  base: env.NODE_ENV === 'production' ? '/event' : '/event',
   site: 'https://theoldsiam.co.th/event',
   integrations: [
     mdx(),
@@ -20,6 +21,9 @@ export default defineConfig({
       },
     }),
   ],
+  adapter: netlify({
+    experimentalStaticHeaders: true
+  }),
   integrations: [react({
     experimentalReactChildren: true,
   })],
@@ -29,6 +33,7 @@ export default defineConfig({
       'import.meta.env.VITE_API_BASE_URL': JSON.stringify(env.VITE_API_BASE_URL || 'http://localhost:3000/api'),
       'import.meta.env.VITE_API_KEY': JSON.stringify(env.VITE_API_KEY || ''),
       'import.meta.env.VITE_GA_TRACKING_ID': JSON.stringify(env.VITE_GA_TRACKING_ID || ''),
+      'import.meta.env.VITE_DOWNLOAD_TOKEN': JSON.stringify(env.VITE_DOWNLOAD_TOKEN || ''),
     },
     preview: {
       allowedHosts: ['assets-manager.ssdapp.net', 'theoldsiam.co.th', 'www.theoldsiam.co.th', 'localhost', '127.0.0.1']

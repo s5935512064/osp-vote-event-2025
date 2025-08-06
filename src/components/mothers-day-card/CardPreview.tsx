@@ -29,6 +29,7 @@ interface CardPreviewProps {
   };
   onDragEnd: (event: any) => void;
   onSizeChange: (elementId: string, newSize: ElementSize) => void;
+  textMessageAlign: "left" | "center" | "right";
 }
 
 export const CardPreview: React.FC<CardPreviewProps> = ({
@@ -38,6 +39,7 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
   elementSizes,
   onDragEnd,
   onSizeChange,
+  textMessageAlign,
 }) => {
   const { textPosition } = cardData.cardType;
   const containerRef = useRef<HTMLDivElement>(null);
@@ -45,6 +47,9 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
   const isMobile = useMediaQuery({ maxWidth: 767 });
   const isTablet = useMediaQuery({ minWidth: 768, maxWidth: 1023 });
   const isDesktop = useMediaQuery({ minWidth: 1024 });
+  // const [textMessageAlign, setTextMessageAlign] = useState<
+  //   "left" | "center" | "right"
+  // >(textPosition.textAlign as any);
 
   // คำนวณ scale factors สำหรับ mobile
   const getScaleFactors = () => {
@@ -207,7 +212,7 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
                   fontFamily: textPosition.fontFamily,
                   fontWeight: "600",
                   lineHeight: "1.4",
-                  textAlign: textPosition.textAlign as any,
+                  textAlign: textMessageAlign,
                 }}
               >
                 {cardData.messageText}
@@ -285,7 +290,7 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
                   fontFamily: textPosition.fontFamily,
                   fontWeight: "600",
                   lineHeight: "1.4",
-                  textAlign: textPosition.textAlign as any,
+                  textAlign: textMessageAlign,
                 }}
               >
                 {cardData.messageText}

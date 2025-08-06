@@ -3,7 +3,7 @@ import type { Event } from "./types";
 export const events: Event[] = [
   {
     id: "mothers-day-event",
-    title: "The Old Siam: Mother's Day 2025",
+    title: "Love is Unconditional | The Old Siam Plaza",
     subtitle: "ร่วมแสดงความรักและความกตัญญูต่อคุณแม่",
     description:
       "12 สิงหาคมปีนี้ ให้ ดิโอลด์ สยาม พลาซ่า เป็นสื่อกลางแทนความรักและความรู้สึกอันแสนอบอุ่นที่คุณมีต่อคุณแม่ ร่วมกิจกรรมพิเศษและชมคอลเลกชันผ้าไหมไทยสุดพิเศษ พร้อมรับของที่ระลึกสำหรับคุณแม่ที่รัก",
@@ -26,7 +26,7 @@ export const events: Event[] = [
   },
   {
     id: "pride-month-vote",
-    title: "The Old Siam: We're Proud of You",
+    title: "We're Proud of You | The Old Siam Plaza",
     subtitle: "ผ้าไหมไทยผ่านความภาคภูมิใจของ ดิ โอลด์ สยาม",
     image:
       "https://res.cloudinary.com/dndcgytjh/image/upload/v1752777677/ejowcreczyfw5ui42ztj.webp",
