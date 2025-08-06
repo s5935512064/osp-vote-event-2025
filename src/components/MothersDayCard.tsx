@@ -218,8 +218,8 @@ const ActivityCarousel: React.FC = () => {
     {
       id: 5,
       src: MothersDayActivity5.src,
-      alt: "Mother's Day Activity 5",
-      link: "https://www.facebook.com/share/p/1CNgKtkdEK/",
+      alt: "Workshop Silk",
+      link: "https://www.facebook.com/share/p/19zzznjnZZ/",
     },
     {
       id: 6,
