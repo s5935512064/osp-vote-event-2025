@@ -99,4 +99,116 @@ export class MothersDayCardService {
       throw new Error("ไม่สามารถดึงข้อมูลการ์ดได้");
     }
   }
+
+  // Download Card Files
+  static async downloadCard(pathFile: string, filename: string): Promise<void> {
+    try {
+      const downloadIdCard = pathFile.split("/").pop();
+      const downloadPathCard = `https://assets-manager.ssdapp.net/api/download/${downloadIdCard}`;
+
+      const responseCard = await fetch(downloadPathCard, {
+        headers: {
+          Authorization: `Bearer ${import.meta.env.VITE_DOWNLOAD_TOKEN}`,
+          "User-Agent": "Mozilla/5.0 (compatible; AstroDownload/1.0)",
+          Accept: "*/*",
+        },
+      });
+
+      if (!responseCard.ok) {
+        throw new Error("ไม่สามารถดาวน์โหลดการ์ดได้ กรุณาลองใหม่อีกครั้ง");
+      }
+
+      const contentType =
+        responseCard.headers.get("content-type") || "application/octet-stream";
+      const contentLength = responseCard.headers.get("content-length");
+      const buffer = await responseCard.arrayBuffer();
+
+      const headers: Record<string, string> = {
+        "Content-Type": contentType,
+        "Content-Disposition": `attachment; filename="${filename}"`,
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization",
+        "Cache-Control": "no-cache",
+      };
+
+      if (contentLength) {
+        headers["Content-Length"] = contentLength;
+      }
+
+      if (responseCard.ok) {
+        const blobCard = await responseCard.blob();
+        const { saveAs } = await import("file-saver");
+        saveAs(blobCard, `${filename}-card.png`);
+      }
+    } catch (error) {
+      console.error("Failed to download card:", error);
+      throw new Error("ไม่สามารถดาวน์โหลดการ์ดได้ กรุณาลองใหม่อีกครั้ง");
+    }
+  }
+
+  // Print Card
+  static async printCard(cardId: string): Promise<void> {
+    try {
+      // Get card data first
+      const cardData = await this.getCardById(cardId);
+
+      if (!cardData) {
+        throw new Error("ไม่พบการ์ดที่ระบุ");
+      }
+
+      const printJS = (await import("print-js")).default;
+      const images: string[] = [];
+
+      // Prepare cover image for printing
+      if (cardData.data.coverImage) {
+        const downloadIdCover = cardData.data.coverImage.split("/").pop();
+        const downloadPathCover = `https://assets-manager.ssdapp.net/api/download/${downloadIdCover}`;
+
+        const responseCover = await fetch(
+          `/api/download?url=${encodeURIComponent(
+            downloadPathCover
+          )}&filename=cover.png`
+        );
+
+        if (responseCover.ok) {
+          const blobCover = await responseCover.blob();
+          const blobUrlCover = URL.createObjectURL(blobCover);
+          images.push(blobUrlCover);
+        }
+      }
+
+      // Prepare card image for printing
+      if (cardData.data.cardImage) {
+        const downloadIdCard = cardData.data.cardImage.split("/").pop();
+        const downloadPathCard = `https://assets-manager.ssdapp.net/api/download/${downloadIdCard}`;
+
+        const responseCard = await fetch(
+          `/api/download?url=${encodeURIComponent(
+            downloadPathCard
+          )}&filename=card.png`
+        );
+
+        if (responseCard.ok) {
+          const blobCard = await responseCard.blob();
+          const blobUrlCard = URL.createObjectURL(blobCard);
+          images.push(blobUrlCard);
+        }
+      }
+
+      if (images.length > 0) {
+        printJS({
+          printable: images,
+          type: "image",
+          showModal: true,
+          imageStyle: "width:100%;margin:0px;padding:0px;",
+        });
+      } else {
+        throw new Error("ไม่พบรูปภาพที่จะพิมพ์");
+      }
+    } catch (error) {
+      console.error("Failed to print card:", error);
+      throw new Error("ไม่สามารถพิมพ์การ์ดได้ กรุณาลองใหม่อีกครั้ง");
+    }
+  }
 }
