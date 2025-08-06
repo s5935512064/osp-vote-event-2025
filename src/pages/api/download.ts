@@ -4,7 +4,6 @@ import type { APIRoute } from "astro";
 export const prerender = false;
 
 export const GET: APIRoute = async ({ request, url }) => {
-  console.log(request, url);
   // ลองหลายวิธีในการดึง parameters
   let fileUrl = url.searchParams.get("url");
   let filename = url.searchParams.get("filename") || "download";
