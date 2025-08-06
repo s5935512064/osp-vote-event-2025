@@ -8,7 +8,7 @@ export const GET: APIRoute = async ({ request, url }) => {
   let fileId = url.searchParams.get("fileId");
   let filename = url.searchParams.get("filename") || "download";
 
-  const downloadPath = `https://assets-manager.ssdapp.net/api/download/${fileId}`;
+  const downloadPath = `http://192.168.250.5:8930/api/download/${fileId}`;
 
   // Manual parsing fallback
   if (!fileId) {
@@ -52,6 +52,7 @@ export const GET: APIRoute = async ({ request, url }) => {
 
   try {
     const response = await fetch(downloadPath, {
+      method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
         "User-Agent": "Mozilla/5.0 (compatible; AstroDownload/1.0)",

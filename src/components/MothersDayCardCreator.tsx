@@ -427,15 +427,15 @@ const MothersDayCardCreator: React.FC<MothersDayCardCreatorProps> = ({
   );
 
   const handleLoad = async (path: string, name: string) => {
-    await MothersDayCardService.downloadCard(path, name);
-    // const downloadId = path.split("/").pop();
+    // await MothersDayCardService.downloadCard(path, name);
+    const downloadId = path.split("/").pop();
 
-    // const response = await fetch(
-    //   `/event/api/download?fileId=${downloadId}&filename=${name}`
-    // );
+    const response = await fetch(
+      `/event/api/download?fileId=${downloadId}&filename=${name}`
+    );
 
-    // const blob = await response.blob();
-    // saveAs(blob, name, { autoBom: true });
+    const blob = await response.blob();
+    saveAs(blob, name, { autoBom: true });
   };
 
   const printCard = async () => {
