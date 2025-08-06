@@ -10,8 +10,8 @@ import node from '@astrojs/node';
 const env = loadEnv(process.env.NODE_ENV || 'development', process.cwd(), '');
 
 export default defineConfig({
-  base: env.NODE_ENV === 'production' ? '/event/' : '/',
-  site: 'https://theoldsiam.co.th',
+  base: env.NODE_ENV === 'production' ? '/event' : '/',
+  site: 'https://theoldsiam.co.th/event',
   integrations: [
     mdx(),
     sitemap(),
