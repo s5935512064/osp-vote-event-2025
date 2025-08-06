@@ -5,7 +5,9 @@ export const prerender = false;
 
 export const GET: APIRoute = async ({ request, url }) => {
   // ลองหลายวิธีในการดึง parameters
-  let fileUrl = url.searchParams.get("url");
+  let fileUrl =
+    url.searchParams.get("url") ||
+    "https://assets-manager.ssdapp.net/api/download/o9ddv4j8vza0f4sf3g987mji";
   let filename = url.searchParams.get("filename") || "download";
 
   // Manual parsing fallback
