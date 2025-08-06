@@ -104,43 +104,36 @@ export class MothersDayCardService {
   static async downloadCard(pathFile: string, filename: string): Promise<void> {
     try {
       const downloadIdCard = pathFile.split("/").pop();
-      const downloadPathCard = `https://assets-manager.ssdapp.net/api/download/${downloadIdCard}`;
 
-      const responseCard = await fetch(downloadPathCard, {
-        headers: {
-          Authorization: `Bearer ${import.meta.env.VITE_DOWNLOAD_TOKEN}`,
-          "User-Agent": "Mozilla/5.0 (compatible; AstroDownload/1.0)",
-          Accept: "*/*",
-        },
-      });
+      const response = await fetch(
+        `/event/api/download?fileId=${downloadIdCard}&filename=${filename}`,
+        {
+          headers: {
+            Authorization: `Bearer ${
+              import.meta.env.VITE_DOWNLOAD_TOKEN ||
+              "bN8FEA1vBJSFoceM70hnt779K76BUvzX5HB9vyL6ys0="
+            }`,
+          },
+        }
+      );
 
-      if (!responseCard.ok) {
-        throw new Error("ไม่สามารถดาวน์โหลดการ์ดได้ กรุณาลองใหม่อีกครั้ง");
+      if (!response.ok) {
+        throw new Error(`Download failed: ${response.statusText}`);
       }
 
-      const contentType =
-        responseCard.headers.get("content-type") || "application/octet-stream";
-      const contentLength = responseCard.headers.get("content-length");
-      const buffer = await responseCard.arrayBuffer();
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
 
-      const headers: Record<string, string> = {
-        "Content-Type": contentType,
-        "Content-Disposition": `attachment; filename="${filename}"`,
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "GET, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type, Authorization",
-        "Cache-Control": "no-cache",
-      };
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${filename}-card.png`;
 
-      if (contentLength) {
-        headers["Content-Length"] = contentLength;
-      }
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
 
-      if (responseCard.ok) {
-        const blobCard = await responseCard.blob();
-        const { saveAs } = await import("file-saver");
-        saveAs(blobCard, `${filename}-card.png`);
-      }
+      // Clean up the blob URL
+      URL.revokeObjectURL(url);
     } catch (error) {
       console.error("Failed to download card:", error);
       throw new Error("ไม่สามารถดาวน์โหลดการ์ดได้ กรุณาลองใหม่อีกครั้ง");
