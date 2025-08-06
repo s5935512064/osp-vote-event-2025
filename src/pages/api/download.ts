@@ -5,17 +5,19 @@ export const prerender = false;
 
 export const GET: APIRoute = async ({ request, url }) => {
   // ลองหลายวิธีในการดึง parameters
-  let fileUrl = url.searchParams.get("url");
+  let fileId = url.searchParams.get("fileId");
   let filename = url.searchParams.get("filename") || "download";
 
+  const downloadPath = `https://assets-manager.ssdapp.net/api/download/${fileId}`;
+
   // Manual parsing fallback
-  if (!fileUrl) {
+  if (!fileId) {
     const urlString = url.toString();
     const urlMatch = urlString.match(/[?&]url=([^&]+)/);
     const filenameMatch = urlString.match(/[?&]filename=([^&]+)/);
 
     if (urlMatch) {
-      fileUrl = decodeURIComponent(urlMatch[1]);
+      fileId = decodeURIComponent(urlMatch[1]);
     }
     if (filenameMatch) {
       filename = decodeURIComponent(filenameMatch[1]);
@@ -29,7 +31,7 @@ export const GET: APIRoute = async ({ request, url }) => {
     import.meta.env.VITE_DOWNLOAD_TOKEN ||
     "bN8FEA1vBJSFoceM70hnt779K76BUvzX5HB9vyL6ys0=";
 
-  if (!fileUrl) {
+  if (!fileId) {
     return new Response(
       JSON.stringify({
         error: "Missing file URL",
@@ -49,7 +51,7 @@ export const GET: APIRoute = async ({ request, url }) => {
   }
 
   try {
-    const response = await fetch(fileUrl, {
+    const response = await fetch(downloadPath, {
       headers: {
         Authorization: `Bearer ${token}`,
         "User-Agent": "Mozilla/5.0 (compatible; AstroDownload/1.0)",

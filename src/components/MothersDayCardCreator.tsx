@@ -429,10 +429,9 @@ const MothersDayCardCreator: React.FC<MothersDayCardCreatorProps> = ({
   const handleLoad = async (path: string, name: string) => {
     // await MothersDayCardService.downloadCard(path, name);
     const downloadId = path.split("/").pop();
-    const downloadPath = `https://assets-manager.ssdapp.net/api/download/${downloadId}`;
 
     const response = await fetch(
-      `/api/download?url=${downloadPath}&filename=${name}`
+      `/event/api/download?fileId=${downloadId}&filename=${name}`
     );
 
     const blob = await response.blob();
@@ -442,13 +441,11 @@ const MothersDayCardCreator: React.FC<MothersDayCardCreatorProps> = ({
   const printCard = async () => {
     const printJS = (await import("print-js")).default;
     const downloadIdCover = cardResponse?.coverImage.split("/").pop();
-    const downloadPathCover = `https://assets-manager.ssdapp.net/api/download/${downloadIdCover}`;
     const downloadIdCard = cardResponse?.cardImage.split("/").pop();
-    const downloadPathCard = `https://assets-manager.ssdapp.net/api/download/${downloadIdCard}`;
 
     const [responseCover, responseCard] = await Promise.all([
-      fetch(`/event/api/download?url=${downloadPathCover}&filename=${name}`),
-      fetch(`/event/api/download?url=${downloadPathCard}&filename=${name}`),
+      fetch(`/event/api/download?fileId=${downloadIdCover}&filename=${name}`),
+      fetch(`/event/api/download?fileId=${downloadIdCard}&filename=${name}`),
     ]);
     const blobCover = await responseCover.blob();
     const blobCard = await responseCard.blob();
