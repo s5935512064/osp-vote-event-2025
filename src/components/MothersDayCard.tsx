@@ -104,11 +104,11 @@ const animations = {
 };
 
 const LogoSection: React.FC = () => (
-  <div className="flex flex-col items-center justify-center z-10">
+  <div className="flex flex-col items-center justify-center z-10 lg:mt-16 px-6 lg:px-10 ">
     <motion.img
       src={TextLogo.src}
       alt="The Old Siam Plaza Logo"
-      className="object-contain max-h-[20vh] md:max-h-[23vh] lg:max-h-[28vh] -ml-[5%] drop-shadow -mt-10"
+      className="object-contain  drop-shadow max-h-[20vh] "
       {...animations.logo}
     />
   </div>
@@ -128,7 +128,7 @@ const MobileTitleSection: React.FC = () => (
 const ContentSection: React.FC<{ onCreateCard: () => void }> = ({
   onCreateCard,
 }) => (
-  <div className="flex flex-col items-center justify-center z-[10]">
+  <div className="flex flex-col items-center justify-center z-[10] my-2">
     <motion.p
       className="text-white text-base md:text-lg xl:text-xl max-w-screen-sm text-center leading-relaxed"
       {...animations.text}
@@ -293,8 +293,8 @@ const MothersDayCardComponent: React.FC<MothersDayCardProps> = ({}) => {
                 : animations.container.transition
             }
           >
-            <MobileTitleSection />
             <LogoSection />
+            <MobileTitleSection />
             <ContentSection onCreateCard={handleCreateCard} />
             <div className="my-7 w-full z-10">
               <ActivityCarousel />
