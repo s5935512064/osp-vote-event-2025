@@ -1,0 +1,14 @@
+{
+	"geolocation": {
+		"data": {
+			"country": {
+				"code": "TH",
+				"name": "Thailand"
+			},
+			"timezone": "Asia/Bangkok",
+			"latitude": 13.7442,
+			"longitude": 100.4608
+		},
+		"timestamp": 1754463270478
+	}
+}
