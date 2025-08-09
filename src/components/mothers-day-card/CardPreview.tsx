@@ -193,6 +193,11 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
         }}
       >
         <DroppableArea backgroundImage={cardData.cardType.messageImage}>
+          <img
+            src={cardData.cardType.messageImage}
+            alt="Card"
+            className="absolute top-0 left-0 w-full h-full object-cover object-center"
+          />
           {/* Desktop Version (Hidden on Mobile) */}
           <div id="desktop" className={`${!isDesktop ? "hidden" : "block"}`}>
             {createDraggableElement(

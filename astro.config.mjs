@@ -36,7 +36,7 @@ export default defineConfig({
       'import.meta.env.VITE_DOWNLOAD_TOKEN': JSON.stringify(env.VITE_DOWNLOAD_TOKEN || ''),
     },
     preview: {
-      allowedHosts: ['assets-manager.ssdapp.net', 'theoldsiam.co.th', 'www.theoldsiam.co.th', 'localhost', '127.0.0.1']
+      allowedHosts: ['assets-manager.ssdapp.net', 'theoldsiam.co.th', 'www.theoldsiam.co.th', 'localhost', '127.0.0.1', "94e07cdfde36.ngrok-free.app"]
     },
     server: {
       cors: {
