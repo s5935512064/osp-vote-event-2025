@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useCallback, useState, useEffect } from "react";
 import {
   DndContext,
   closestCenter,
@@ -47,6 +47,9 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
   const isMobile = useMediaQuery({ maxWidth: 767 });
   const isTablet = useMediaQuery({ minWidth: 768, maxWidth: 1023 });
   const isDesktop = useMediaQuery({ minWidth: 1024 });
+  const [backgroundImageBase64, setBackgroundImageBase64] =
+    useState<string>("");
+  const [customImageBase64, setCustomImageBase64] = useState<string>("");
   // const [textMessageAlign, setTextMessageAlign] = useState<
   //   "left" | "center" | "right"
   // >(textPosition.textAlign as any);
@@ -174,6 +177,43 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
     </DraggableElement>
   );
 
+  async function imageUrlToBase64(url: string): Promise<string> {
+    const res = await fetch(url, { mode: "cors" });
+    const blob = await res.blob();
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        if (reader.result) {
+          resolve(reader.result as string);
+        } else {
+          reject(new Error("Failed to convert image to Base64"));
+        }
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  }
+
+  useEffect(() => {
+    const convertImage = async () => {
+      try {
+        const base64 = await imageUrlToBase64(cardData.cardType.messageImage);
+        if (cardData.customImage) {
+          const customImageBase64 = await imageUrlToBase64(
+            cardData.customImage
+          );
+          setCustomImageBase64(customImageBase64);
+        }
+        setBackgroundImageBase64(base64);
+      } catch (error) {
+        console.error("Failed to convert image to base64:", error);
+        setBackgroundImageBase64("");
+        setCustomImageBase64("");
+      }
+    };
+    convertImage();
+  }, [cardData.cardType.messageImage, cardData.customImage]);
+
   return (
     <DndContext
       sensors={sensors}
@@ -193,10 +233,14 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
         }}
       >
         <DroppableArea backgroundImage={cardData.cardType.messageImage}>
-          <img
-            src={cardData.cardType.messageImage}
-            alt="Card"
+          <div
             className="absolute top-0 left-0 w-full h-full object-cover object-center"
+            style={{
+              backgroundImage: `url("${backgroundImageBase64}")`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              backgroundRepeat: "no-repeat",
+            }}
           />
           {/* Desktop Version (Hidden on Mobile) */}
           <div id="desktop" className={`${!isDesktop ? "hidden" : "block"}`}>
@@ -251,7 +295,7 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
                 { minSize: { width: 80, height: 30 } }
               )}
 
-            {cardData.customImage &&
+            {customImageBase64 &&
               createDraggableElement(
                 "image",
                 dragPositions.image,
@@ -262,7 +306,7 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
                 >
                   <div className="relative w-full h-full">
                     <img
-                      src={cardData.customImage}
+                      src={customImageBase64}
                       alt="Custom"
                       className={`w-full h-full object-cover object-center transition-all duration-300 rounded-full`}
                       draggable={false}
@@ -328,7 +372,7 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
                 { minSize: { width: 60, height: 25 } }
               )}
 
-            {cardData.customImage &&
+            {customImageBase64 &&
               createDraggableElement(
                 "image",
                 mobilePositions.image,
@@ -336,7 +380,7 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
                 <div className="cursor-move select-none w-full h-full relative group/child">
                   <div className="relative w-full h-full">
                     <img
-                      src={cardData.customImage}
+                      src={customImageBase64}
                       alt="Custom"
                       className={`w-full h-full object-cover object-center transition-all duration-300 rounded-full`}
                       draggable={false}
