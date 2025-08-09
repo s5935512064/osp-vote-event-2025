@@ -37,7 +37,6 @@ import pkg from "file-saver";
 const { saveAs } = pkg;
 //@ts-ignore
 import domtoimage from "dom-to-image-more";
-
 import Swal from "sweetalert2";
 
 interface MothersDayCardCreatorProps {
@@ -187,7 +186,37 @@ const MothersDayCardCreator: React.FC<MothersDayCardCreatorProps> = ({
             container.style.width = `${exportWidth}px`;
             container.style.height = `${exportHeight}px`;
             container.style.position = "relative";
-            container.style.background = "white";
+
+            // const img = clonedNode.createElement("img");
+
+            // img.src = CardType5.src;
+            // img.style.position = "absolute";
+            // img.style.top = "0";
+            // img.style.left = "0";
+            // img.style.width = "100%";
+            // img.style.height = "100%";
+            // img.style.objectFit = "cover";
+            // img.style.zIndex = "10";
+
+            // container.insertBefore(img, container.firstChild);
+
+            // container.style.backgroundImage = `url(${cardData.cardType.messageImage})`;
+            // container.style.backgroundSize = "cover";
+            // container.style.backgroundPosition = "center";
+            // container.style.backgroundRepeat = "no-repeat";
+
+            // const backgroundImg = clonedDoc.createElement("img");
+            // backgroundImg.src = cardData.cardType.messageImage;
+            // backgroundImg.style.position = "absolute";
+            // backgroundImg.style.top = "0";
+            // backgroundImg.style.left = "0";
+            // backgroundImg.style.width = "100%";
+            // backgroundImg.style.height = "100%";
+            // backgroundImg.style.objectFit = "cover";
+            // backgroundImg.style.zIndex = "-1";
+
+            // เพิ่ม background image เป็น element แรก
+            // container.insertBefore(backgroundImg, container.firstChild);
 
             // ลบ resize handles
             const resizeHandles = container.querySelectorAll(
@@ -425,6 +454,12 @@ const MothersDayCardCreator: React.FC<MothersDayCardCreatorProps> = ({
     },
     []
   );
+
+  const ImageToBase64 = useCallback((image: string) => {
+    const img = new Image();
+    img.src = image;
+    return img.src;
+  }, []);
 
   const handleLoad = async (path: string, name: string) => {
     // await MothersDayCardService.downloadCard(path, name);
