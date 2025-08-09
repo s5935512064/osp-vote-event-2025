@@ -19,7 +19,7 @@ export const DroppableArea: React.FC<DroppableAreaProps> = ({
       ref={setNodeRef}
       className="relative w-full h-full"
       style={{
-        backgroundImage: `url(${backgroundImage})`,
+        // backgroundImage: `url(${backgroundImage})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
         position: "relative",
