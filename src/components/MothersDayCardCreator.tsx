@@ -36,7 +36,9 @@ import {
 import pkg from "file-saver";
 const { saveAs } = pkg;
 //@ts-ignore
-import domtoimage from "dom-to-image-more";
+// import domtoimage from "dom-to-image-more";
+import html2canvas from "html2canvas";
+import * as culori from "culori";
 import Swal from "sweetalert2";
 
 interface MothersDayCardCreatorProps {
@@ -91,6 +93,34 @@ const MothersDayCardCreator: React.FC<MothersDayCardCreatorProps> = ({
     elementSizes,
   });
 
+  function replaceOKLCHColors(root: HTMLElement) {
+    const allElements = root.querySelectorAll<HTMLElement>("*");
+    allElements.forEach((el) => {
+      const computedStyle = window.getComputedStyle(el);
+
+      // list property ที่ต้องเช็ค
+      const props: (keyof CSSStyleDeclaration)[] = [
+        "color",
+        "backgroundColor",
+        "borderColor",
+      ];
+
+      props.forEach((prop) => {
+        const value = computedStyle[prop] as string;
+        if (typeof value === "string" && value.includes("oklch")) {
+          try {
+            const rgb = culori.formatRgb(culori.oklch(value));
+            if (rgb) {
+              (el.style as any)[prop] = rgb;
+            }
+          } catch (err) {
+            console.warn("สีแปลงไม่ได้:", value, err);
+          }
+        }
+      });
+    });
+  }
+
   const generateCardImage = async () => {
     // สร้าง hidden container สำหรับ export ที่มี aspect ratio เดียวกับ preview
     const exportContainer = document.createElement("div");
@@ -115,132 +145,88 @@ const MothersDayCardCreator: React.FC<MothersDayCardCreatorProps> = ({
       );
 
       if (cardPreviewElement) {
-        exportContainer.innerHTML = cardPreviewElement.innerHTML;
-        const clonedContainer = exportContainer.querySelector(
-          ".card-preview-container"
-        );
-        if (clonedContainer) {
-          (clonedContainer as HTMLElement).style.width = `${exportWidth}px`;
-          (clonedContainer as HTMLElement).style.height = `${exportHeight}px`;
-          (clonedContainer as HTMLElement).style.maxWidth = `${exportWidth}px`;
-          (
-            clonedContainer as HTMLElement
-          ).style.maxHeight = `${exportHeight}px`;
+        const clonedElement = cardPreviewElement.cloneNode(true) as HTMLElement;
 
-          // แสดงเฉพาะ desktop version และซ่อน mobile version
-          const desktopElements = clonedContainer.querySelectorAll(".hidden");
-          desktopElements.forEach((element) => {
-            (element as HTMLElement).classList.remove("hidden");
-            (element as HTMLElement).classList.add("block");
-          });
+        // ตั้งค่า styles สำหรับ export
+        clonedElement.style.width = `${exportWidth}px`;
+        clonedElement.style.height = `${exportHeight}px`;
+        clonedElement.style.position = "relative";
+        clonedElement.style.borderRadius = "0";
+        clonedElement.style.boxShadow = "none";
+        clonedElement.style.overflow = "hidden";
 
-          const mobileElements = clonedContainer.querySelectorAll(".block");
-          mobileElements.forEach((element) => {
-            if (
-              element.classList.contains("md:hidden") ||
-              element.previousElementSibling?.classList.contains("hidden")
-            ) {
-              (element as HTMLElement).classList.remove("block");
-              (element as HTMLElement).classList.add("hidden");
-            }
-          });
-        }
-
-        const previewElement = document.querySelector(
-          ".card-preview-container"
-        ) as HTMLElement;
-
-        const previewWidth = previewElement?.offsetWidth || 400;
-        const previewHeight = previewElement?.offsetHeight || 300;
-
-        const scaleX = exportWidth / previewWidth;
-        const scaleY = exportHeight / previewHeight;
-        const scale = Math.min(scaleX, scaleY);
-        // แสดงเฉพาะ desktop version ใน export
-        const desktopElements = exportContainer.querySelectorAll(".hidden");
+        // แสดงเฉพาะ desktop version และซ่อน mobile version
+        const desktopElements = clonedElement.querySelectorAll(".hidden");
         desktopElements.forEach((element) => {
-          (element as HTMLElement).style.display = "block";
+          (element as HTMLElement).classList.remove("hidden");
+          (element as HTMLElement).classList.add("block");
         });
 
-        const mobileElements = exportContainer.querySelector("#mobile");
+        const mobileElements = clonedElement.querySelector("#mobile");
         if (mobileElements) {
           (mobileElements as HTMLElement).style.display = "none";
         }
 
-        const dataUrl = await domtoimage.toPng(exportContainer, {
-          bgcolor: "#ffffff",
-          height: exportHeight,
+        // ลบ resize handles และ borders
+        const resizeHandles = clonedElement.querySelectorAll(
+          '.absolute[style*="bg-blue-400"], .absolute[style*="bg-blue-500"], .fixed, .resize-handle'
+        );
+        resizeHandles.forEach((handle) => handle.remove());
+
+        // ลบ borders จาก draggable elements
+        const draggableElements =
+          clonedElement.querySelectorAll(".draggable-element");
+        draggableElements.forEach((element) => {
+          (element as HTMLElement).style.border = "none";
+          (element as HTMLElement).style.outline = "none";
+        });
+
+        exportContainer.appendChild(clonedElement);
+
+        // เพิ่ม fonts และ styles
+        const style = document.createElement("style");
+        style.textContent = `
+          @font-face {
+            font-family: 'fonttintin';
+            src: url('${window.location.origin}/fonts/fonttintin.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+          }
+          * {
+            font-family: 'fonttintin', sans-serif !important;
+            border: none !important;
+            outline: none !important;
+            box-shadow: none !important;
+          }
+          .draggable-element {
+            border: none !important;
+            outline: none !important;
+          }
+          .resize-handle {
+            display: none !important;
+          }
+        `;
+        exportContainer.appendChild(style);
+
+        // รอให้ fonts โหลดเสร็จ
+        await document.fonts.ready;
+
+        replaceOKLCHColors(exportContainer);
+
+        // ใช้ html2canvas แทน domtoimage
+        const canvas = await html2canvas(exportContainer, {
           width: exportWidth,
-          quality: 1.0,
-          cacheBust: true,
-          imagePlaceholder: undefined,
-          copyDefaultStyles: true,
+          height: exportHeight,
           scale: 1,
-          useCORS: true, // เพิ่ม option นี้
-          allowTaint: true, // เพิ่ม option นี้
-          filter: (node: any) => {
-            return !node.classList?.contains("export-ignore");
-          },
-          onclone: (clonedNode: any) => {
-            const container = clonedNode as HTMLElement;
-            container.style.width = `${exportWidth}px`;
-            container.style.height = `${exportHeight}px`;
-            container.style.position = "relative";
-
-            // const img = clonedNode.createElement("img");
-
-            // img.src = CardType5.src;
-            // img.style.position = "absolute";
-            // img.style.top = "0";
-            // img.style.left = "0";
-            // img.style.width = "100%";
-            // img.style.height = "100%";
-            // img.style.objectFit = "cover";
-            // img.style.zIndex = "10";
-
-            // container.insertBefore(img, container.firstChild);
-
-            // container.style.backgroundImage = `url(${cardData.cardType.messageImage})`;
-            // container.style.backgroundSize = "cover";
-            // container.style.backgroundPosition = "center";
-            // container.style.backgroundRepeat = "no-repeat";
-
-            // const backgroundImg = clonedDoc.createElement("img");
-            // backgroundImg.src = cardData.cardType.messageImage;
-            // backgroundImg.style.position = "absolute";
-            // backgroundImg.style.top = "0";
-            // backgroundImg.style.left = "0";
-            // backgroundImg.style.width = "100%";
-            // backgroundImg.style.height = "100%";
-            // backgroundImg.style.objectFit = "cover";
-            // backgroundImg.style.zIndex = "-1";
-
-            // เพิ่ม background image เป็น element แรก
-            // container.insertBefore(backgroundImg, container.firstChild);
-
-            // ลบ resize handles
-            const resizeHandles = container.querySelectorAll(
-              '.absolute[style*="bg-blue-400"], .absolute[style*="bg-blue-500"], .fixed'
-            );
-            resizeHandles.forEach((handle) => handle.remove());
-
-            // ปรับขนาด font
-            const textElements = container.querySelectorAll(
-              '[style*="font-size"]'
-            );
-
-            textElements.forEach((element) => {
-              const htmlElement = element as HTMLElement;
-              const currentStyle = htmlElement.style.fontSize;
-
-              if (currentStyle) {
-                const fontSize = parseFloat(currentStyle);
-                htmlElement.style.fontSize = `${fontSize}px`;
-              }
-            });
-
-            const style = document.createElement("style");
-            style.textContent = `
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: "#ffffff",
+          removeContainer: false,
+          imageTimeout: 0,
+          onclone: (clonedDoc: Document) => {
+            // เพิ่ม font styles ใน cloned document
+            const clonedStyle = clonedDoc.createElement("style");
+            clonedStyle.textContent = `
               @font-face {
                 font-family: 'fonttintin';
                 src: url('${window.location.origin}/fonts/fonttintin.ttf') format('truetype');
@@ -249,47 +235,187 @@ const MothersDayCardCreator: React.FC<MothersDayCardCreatorProps> = ({
               }
               * {
                 font-family: 'fonttintin', sans-serif !important;
-                border: none !important;
-                outline: none !important;
-                box-shadow: none !important;
-              }
-              .card-preview-container {
-                border: none !important;
-                outline: none !important;
-                box-shadow: none !important;
-              }
-              .card-preview-container * {
-                border: none !important;
-                outline: none !important;
-                box-shadow: none !important;
-              }
-              .draggable-element {
-                border: none !important;
-                outline: none !important;
-              }
-              .resize-handle, .absolute[style*="bg-blue-400"], .fixed {
-                display: none !important;
-              }
-              *:focus {
-                outline: none !important;
-                border: none !important;
-              }
-              *:hover {
-                border: none !important;
-                outline: none !important;
               }
             `;
-            container.appendChild(style);
+            clonedDoc.head.appendChild(clonedStyle);
           },
         });
 
+        const dataUrl = canvas.toDataURL("image/png", 1.0);
         return dataUrl;
       }
+
+      throw new Error("Card preview element not found");
+    } catch (error) {
+      console.error("Error generating card image:", error);
+      throw error;
     } finally {
-      // ลบ container
-      document.body.removeChild(exportContainer);
+      // ลบ export container
+      if (exportContainer.parentNode) {
+        exportContainer.parentNode.removeChild(exportContainer);
+      }
     }
   };
+
+  // const generateCardImage = async () => {
+  //   const exportContainer = document.createElement("div");
+  //   exportContainer.style.position = "absolute";
+  //   exportContainer.style.left = "-9999px";
+  //   exportContainer.style.top = "-9999px";
+  //   const exportWidth = 1024;
+  //   const exportHeight = 768;
+
+  //   exportContainer.style.width = `${exportWidth}px`;
+  //   exportContainer.style.height = `${exportHeight}px`;
+  //   exportContainer.style.background = "white";
+  //   exportContainer.className = "card-export-container";
+  //   document.body.appendChild(exportContainer);
+
+  //   try {
+  //     const cardPreviewElement = document.querySelector(
+  //       ".card-preview-container"
+  //     );
+
+  //     if (cardPreviewElement) {
+  //       exportContainer.innerHTML = cardPreviewElement.innerHTML;
+  //       const clonedContainer = exportContainer.querySelector(
+  //         ".card-preview-container"
+  //       );
+  //       if (clonedContainer) {
+  //         (clonedContainer as HTMLElement).style.width = `${exportWidth}px`;
+  //         (clonedContainer as HTMLElement).style.height = `${exportHeight}px`;
+  //         (clonedContainer as HTMLElement).style.maxWidth = `${exportWidth}px`;
+  //         (
+  //           clonedContainer as HTMLElement
+  //         ).style.maxHeight = `${exportHeight}px`;
+
+  //         const desktopElements = clonedContainer.querySelectorAll(".hidden");
+  //         desktopElements.forEach((element) => {
+  //           (element as HTMLElement).classList.remove("hidden");
+  //           (element as HTMLElement).classList.add("block");
+  //         });
+
+  //         const mobileElements = clonedContainer.querySelectorAll(".block");
+  //         mobileElements.forEach((element) => {
+  //           if (
+  //             element.classList.contains("md:hidden") ||
+  //             element.previousElementSibling?.classList.contains("hidden")
+  //           ) {
+  //             (element as HTMLElement).classList.remove("block");
+  //             (element as HTMLElement).classList.add("hidden");
+  //           }
+  //         });
+  //       }
+
+  //       const previewElement = document.querySelector(
+  //         ".card-preview-container"
+  //       ) as HTMLElement;
+
+  //       const previewWidth = previewElement?.offsetWidth || 400;
+  //       const previewHeight = previewElement?.offsetHeight || 300;
+
+  //       const scaleX = exportWidth / previewWidth;
+  //       const scaleY = exportHeight / previewHeight;
+  //       const scale = Math.min(scaleX, scaleY);
+  //       const desktopElements = exportContainer.querySelectorAll(".hidden");
+  //       desktopElements.forEach((element) => {
+  //         (element as HTMLElement).style.display = "block";
+  //       });
+
+  //       const mobileElements = exportContainer.querySelector("#mobile");
+  //       if (mobileElements) {
+  //         (mobileElements as HTMLElement).style.display = "none";
+  //       }
+
+  //       const dataUrl = await domtoimage.toPng(exportContainer, {
+  //         bgcolor: "#ffffff",
+  //         height: exportHeight,
+  //         width: exportWidth,
+  //         quality: 1.0,
+  //         cacheBust: true,
+  //         imagePlaceholder: undefined,
+  //         copyDefaultStyles: true,
+  //         scale: 1,
+  //         useCORS: true,
+  //         allowTaint: true,
+  //         filter: (node: any) => {
+  //           return !node.classList?.contains("export-ignore");
+  //         },
+  //         onclone: (clonedNode: any) => {
+  //           const container = clonedNode as HTMLElement;
+  //           container.style.width = `${exportWidth}px`;
+  //           container.style.height = `${exportHeight}px`;
+  //           container.style.position = "relative";
+
+  //           const resizeHandles = container.querySelectorAll(
+  //             '.absolute[style*="bg-blue-400"], .absolute[style*="bg-blue-500"], .fixed'
+  //           );
+  //           resizeHandles.forEach((handle) => handle.remove());
+
+  //           const textElements = container.querySelectorAll(
+  //             '[style*="font-size"]'
+  //           );
+
+  //           textElements.forEach((element) => {
+  //             const htmlElement = element as HTMLElement;
+  //             const currentStyle = htmlElement.style.fontSize;
+
+  //             if (currentStyle) {
+  //               const fontSize = parseFloat(currentStyle);
+  //               htmlElement.style.fontSize = `${fontSize}px`;
+  //             }
+  //           });
+
+  //           const style = document.createElement("style");
+  //           style.textContent = `
+  //             @font-face {
+  //               font-family: 'fonttintin';
+  //               src: url('${window.location.origin}/fonts/fonttintin.ttf') format('truetype');
+  //               font-weight: normal;
+  //               font-style: normal;
+  //             }
+  //             * {
+  //               font-family: 'fonttintin', sans-serif !important;
+  //               border: none !important;
+  //               outline: none !important;
+  //               box-shadow: none !important;
+  //             }
+  //             .card-preview-container {
+  //               border: none !important;
+  //               outline: none !important;
+  //               box-shadow: none !important;
+  //             }
+  //             .card-preview-container * {
+  //               border: none !important;
+  //               outline: none !important;
+  //               box-shadow: none !important;
+  //             }
+  //             .draggable-element {
+  //               border: none !important;
+  //               outline: none !important;
+  //             }
+  //             .resize-handle, .absolute[style*="bg-blue-400"], .fixed {
+  //               display: none !important;
+  //             }
+  //             *:focus {
+  //               outline: none !important;
+  //               border: none !important;
+  //             }
+  //             *:hover {
+  //               border: none !important;
+  //               outline: none !important;
+  //             }
+  //           `;
+  //           container.appendChild(style);
+  //         },
+  //       });
+
+  //       return dataUrl;
+  //     }
+  //   } finally {
+  //     document.body.removeChild(exportContainer);
+  //   }
+  // };
 
   // ฟังก์ชันสำหรับแสดง Sweet Alert และส่ง API
   const handleCreateCard = async () => {
