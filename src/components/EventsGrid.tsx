@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { EventCard } from "./EventCard";
 import {
   getAllEvents,
@@ -68,11 +68,14 @@ export function EventsGrid({ showOnlyActive = false, limit }: EventsGridProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredEvents.map((event) => (
               <div key={`featured-${event.id}`} className="relative h-full">
-                <div className="absolute -top-2 -left-2 z-10">
-                  <span className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full animate-pulse">
-                    HOT
-                  </span>
-                </div>
+                {event.isHot && (
+                  <div className="absolute -top-2 -left-2 z-10">
+                    <span className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full animate-pulse">
+                      HOT
+                    </span>
+                  </div>
+                )}
+
                 <EventCard event={event} />
               </div>
             ))}

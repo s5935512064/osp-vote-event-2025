@@ -2,6 +2,32 @@ import type { Event } from "./types";
 
 export const events: Event[] = [
   {
+    id: "loy-krathong-thai-silk-2568",
+    title: "ลอยกระทงผ้าไทยออนไลน์ 2568",
+    subtitle:
+      "ร่วมสืบสาน รักษา และต่อยอด พระราชปณิธานผ้าไทย กับ ดิ โอลด์ สยาม พลาซ่า (Silk Market of Thailand)",
+    description:
+      "เฉลิมฉลองเทศกาลลอยกระทงกับกิจกรรมออนไลน์สุดพิเศษจาก ดิ โอลด์ สยาม พลาซ่า สืบสานวัฒนธรรมไทยและร่วมอนุรักษ์ผ้าไทยผ่านกิจกรรมลอยกระทงผ้าไทยออนไลน์",
+    href: "https://theoldsiam.co.th/loykrathong",
+    image:
+      "https://res.cloudinary.com/dndcgytjh/image/upload/v1761998610/ubaipia6olwrqhr35lkg.webp",
+    status: "active",
+    startDate: "2025-11-01",
+    endDate: "2025-11-30",
+    tags: [
+      "ลอยกระทง",
+      "ผ้าไทย",
+      "ออนไลน์",
+      "วัฒนธรรมไทย",
+      "กระทง",
+      "loykrathong",
+      "silkmarket",
+    ],
+    slug: "loy-krathong-thai-silk",
+    year: "2025",
+    isHot: true,
+  },
+  {
     id: "mothers-day-event",
     title: "Love is Unconditional | The Old Siam Plaza",
     subtitle: "ร่วมแสดงความรักและความกตัญญูต่อคุณแม่",
@@ -10,7 +36,7 @@ export const events: Event[] = [
     href: "/event/2025/mothers-day-activity",
     image:
       "https://assets-manager.ssdapp.net/public/file/ppmfyud6wyaj8fjuvz4koui7",
-    status: "active",
+    status: "ended",
     startDate: "2025-08-08",
     endDate: "2025-08-30",
     tags: [
@@ -23,6 +49,7 @@ export const events: Event[] = [
     ],
     slug: "mothers-day-activity",
     year: "2025",
+    isHot: false,
   },
   {
     id: "pride-month-vote",
@@ -33,12 +60,13 @@ export const events: Event[] = [
     description:
       "ร่วมโหวตความงามของชุดผ้าไหมไทยภายใน ดิ โอลด์ สยาม พลาซ่า เพื่อสนับสนุนเอกลักษณ์ และอนุรักษ์สมบัติทางวัฒนธรรมไทย",
     href: "/event/2025/pride-month-vote",
-    status: "active",
+    status: "ended",
     startDate: "2025-07-01",
     endDate: "2025-08-17",
     tags: ["Pride", "ภาพถ่าย", "ประกวด", "LGBTQ+"],
     slug: "pride-month-vote",
     year: "2025",
+    isHot: false,
   },
 ];
 

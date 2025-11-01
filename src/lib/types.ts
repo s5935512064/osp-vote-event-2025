@@ -142,6 +142,7 @@ export interface Event {
   image?: string;
   slug: string;
   year: string;
+  isHot: boolean;
 }
 
 export interface EventCardProps {
