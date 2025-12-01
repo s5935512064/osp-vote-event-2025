@@ -30,9 +30,9 @@ export const ProgressSteps: React.FC<ProgressStepsProps> = ({
                 <div
                   className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 ${
                     isActive
-                      ? "bg-[#0a3254] text-white scale-110"
+                      ? "bg-[#21252b] text-white scale-110"
                       : isCompleted
-                      ? "bg-[#0a3254]/50 text-white"
+                      ? "bg-[#21252b]/50 text-white"
                       : "bg-gray-200 text-gray-400"
                   }`}
                 >

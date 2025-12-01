@@ -22,6 +22,9 @@ const buttonVariants = cva(
         link: "text-primary underline-offset-4 hover:underline",
         colorful:
           "relative overflow-hidden bg-gradient-to-r from-[#e40303] via-[#ff8c00] via-[#ffed00] via-[#008018] via-[#004cff] to-[#732982] bg-[length:200%_100%] text-white shadow-xs animate-[gradient_4s_linear_infinite]",
+        fatherDay:
+          "bg-[#ffdb4d] text-[#21252b] px-8 py-3 rounded-lg z-10 text-lg hover:bg-[#ffdb4d]/90",
+        blackFatherDay: "bg-[#21252b] text-white hover:bg-[#21252b]/90",
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",

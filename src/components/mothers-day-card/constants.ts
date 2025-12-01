@@ -6,6 +6,11 @@ import CardType3 from "../../assets/activity_mother/6.webp";
 import CardType4 from "../../assets/activity_mother/8.webp";
 import CardType5 from "../../assets/activity_mother/9.webp";
 
+import CardFatherType1 from "../../assets/activity_father/17.webp";
+import CardFatherType2 from "../../assets/activity_father/14.webp";
+import CardFatherType3 from "../../assets/activity_father/19.webp";
+import CardFatherType4 from "../../assets/activity_father/21.webp";
+
 export const CARD_TYPES: CardType[] = [
   {
     id: "gentle-bloom",
@@ -98,6 +103,85 @@ export const CARD_TYPES: CardType[] = [
       width: 80,
       fontSize: 18,
       color: "#223766",
+      fontFamily: "font-tintin",
+      textAlign: "center",
+    },
+  },
+];
+
+export const FATHER_DAY_CARD_TYPES: CardType[] = [
+  {
+    id: "heart-of-memories",
+    name: "หัวใจแห่งความทรงจำ (Heart of Memories)",
+    coverImage:
+      "https://assets-manager.ssdapp.net/public/file/s8njvyj207pj5098978gny46",
+    messageImage: CardFatherType1.src,
+    description:
+      "ทุกชั้นของภาพซ้อนกันเป็นหัวใจ ดุจความทรงจำที่เก็บไว้ในหัวใจพ่อเสมอ การ์ดสไตล์กระดาษฉลุในโทนสีเหลือง ถ่ายทอดช่วงเวลาระหว่างพ่อและลูกผ่านกิจกรรมเล็กๆ แต่อัดแน่นด้วยความรัก ทุกเรื่องราวของเรา…มีพ่อเป็นหัวใจของความสุขเสมอ",
+    theme: "heart-of-memories",
+    textPosition: {
+      x: 10,
+      y: 60,
+      width: 80,
+      fontSize: 18,
+      color: "#c7ab7f",
+      fontFamily: "font-tintin",
+      textAlign: "center",
+    },
+  },
+  {
+    id: "line-art-love",
+    name: "รักที่วาดด้วยเส้นของหัวใจ (Line Art Love)",
+    coverImage:
+      "https://assets-manager.ssdapp.net/public/file/hb79og1u06c2kyyssumyb0rg",
+    messageImage: CardFatherType2.src,
+    description:
+      "ลายเส้นแบบเรียบง่ายแต่ลึกซึ้ง สื่อถึงความผูกพันที่ไม่เคยขาดตอน และเป็นสัญลักษณ์ของการเติบโตที่พ่อจะคอยสนับสนุนอยู่เสมอ",
+    theme: "line-art-love",
+    textPosition: {
+      x: 10,
+      y: 60,
+      width: 80,
+      fontSize: 18,
+      color: "#0d0d0b",
+      fontFamily: "font-tintin",
+      textAlign: "center",
+    },
+  },
+  {
+    id: "warm-hug-illustration",
+    name: "อ้อมกอดที่อบอุ่นที่สุดในโลก (Warm Hug Illustration)",
+    coverImage:
+      "https://assets-manager.ssdapp.net/public/file/ozvzr8oo9fi1y2qsaqtga0vj",
+    messageImage: CardFatherType3.src,
+    description:
+      "ภาพสไตล์มินิมอล ลายล้อมไปด้วยดอกไม้ สื่อถึงอ้อมกอดของพ่อ…คือที่พักใจที่อบอุ่นที่สุดไม่ว่าจะกี่ปีผ่านไป",
+    theme: "warm-hug-illustration",
+    textPosition: {
+      x: 10,
+      y: 60,
+      width: 80,
+      fontSize: 18,
+      color: "#c4aa80",
+      fontFamily: "font-tintin",
+      textAlign: "center",
+    },
+  },
+  {
+    id: "guiding-light-love",
+    name: "แสงสว่างแห่งความรัก (The Guiding Light of Love)",
+    coverImage:
+      "https://assets-manager.ssdapp.net/public/file/soly1k55munfmbcotulhs9v1",
+    messageImage: CardFatherType4.src,
+    description:
+      "ภาพเงาพ่อที่จูงมือลูกสาว สื่อถึงการนำทางในทุกย่างก้าวของชีวิต แม้ในวันที่โลกดูมืดมิด พ่อก็คือแสงสว่างที่อบอุ่นและมั่นคงเสมอมา",
+    theme: "guiding-light-love",
+    textPosition: {
+      x: 10,
+      y: 60,
+      width: 80,
+      fontSize: 18,
+      color: "#96846b",
       fontFamily: "font-tintin",
       textAlign: "center",
     },

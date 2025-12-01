@@ -6,6 +6,7 @@ import { type CardType } from "./types";
 interface CardTypeItemProps {
   cardType: CardType;
   isSelected: boolean;
+  color?: string;
   onSelect: (cardType: CardType) => void;
 }
 
@@ -13,6 +14,7 @@ export const CardTypeItem: React.FC<CardTypeItemProps> = ({
   cardType,
   isSelected,
   onSelect,
+  color,
 }) => {
   const handleClick = useCallback(
     (e: React.MouseEvent) => {
@@ -22,6 +24,8 @@ export const CardTypeItem: React.FC<CardTypeItemProps> = ({
     },
     [cardType, onSelect]
   );
+
+  const primaryColor = "#ffdb4d";
 
   return (
     <motion.div
@@ -43,8 +47,9 @@ export const CardTypeItem: React.FC<CardTypeItemProps> = ({
       <div className="group-hover:opacity-100 w-full flex justify-center items-center h-full opacity-0 absolute bottom-0 left-0 p-4">
         <Button
           type="button"
+          variant={"fatherDay"}
           onClick={handleClick}
-          className="bg-[#0a3254] text-white px-8 py-3 rounded-lg z-10 text-lg"
+          className={` px-8 py-3 rounded-lg z-10 text-lg`}
         >
           เลือกการ์ด
         </Button>

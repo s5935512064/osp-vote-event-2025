@@ -3,6 +3,7 @@ import Layout from '../../layouts/Layout.astro';
 import { getEventBySlug, getAllEvents } from '../../lib/eventsConfig';
 import PhotoGallery from "../../components/photo-gallery";
 import MothersDayCardComponent from '../../components/MothersDayCard';
+import FatherDayCardComponent from '../../components/FatherDayCard';
 import { ArrowLeft, Home } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 export async function getStaticPaths() {
@@ -26,6 +27,8 @@ if (!event) {
 // Route to specific components based on event type
 const getEventComponent = (eventSlug: string) => {
   switch (eventSlug) {
+    case 'fathers-day-activity':
+      return 'FatherDayCardCreator';
     case 'mothers-day-activity':
       return 'MothersDayCardCreator';
     case 'pride-month-vote':
@@ -68,6 +71,19 @@ const getEventMetaTags = (event: any, componentType: string) => {
       twitterDescription: `สร้างการ์ดวันแม่สุดพิเศษตามสไตล์ของคุณเอง พร้อมข้อความอบอุ่น และแชร์ให้คนที่คุณรัก พร้อมกับกิจกรรมอื่นๆ อาทิเช่น workshop จัดดอกไม้ , บริจาคโลหิต เป็นต้น`,
     };
   }
+  if (componentType === 'FatherDayCardCreator') {
+    return {
+      title: `5 ธันวาคมปีนี้ ให้ ดิโอลด์ สยาม พลาซ่า เป็นสื่อกลางแทนความรักและความรู้สึกอันแสนอบอุ่นที่คุณมีต่อคุณพ่อ`,
+      description: "สร้างการ์ดวันพ่อสุดพิเศษตามสไตล์ของคุณเอง พร้อมข้อความอบอุ่น และแชร์ให้คนที่คุณรัก พร้อมกับกิจกรรมอื่นๆ อาทิเช่น workshop จัดดอกไม้ , บริจาคโลหิต เป็นต้น",
+      keywords: `การ์ดวันพ่อ, สร้างการ์ดวันพ่อ, ผ้าไหมไทย, วันพ่อ, ความกตัญญู, the old siam plaza, ดิโอลด์สยามพลาซ่า, fathers day card,กิจกรรมวันพ่อ`,
+      ogTitle: `5 ธันวาคมปีนี้ ให้ ดิโอลด์ สยาม พลาซ่า เป็นสื่อกลางแทนความรักและความรู้สึกอันแสนอบอุ่นที่คุณมีต่อคุณพ่อ`,
+      ogDescription: `สร้างการ์ดวันพ่อสุดพิเศษตามสไตล์ของคุณเอง พร้อมข้อความอบอุ่น และแชร์ให้คนที่คุณรัก พร้อมกับกิจกรรมอื่นๆ อาทิเช่น workshop จัดดอกไม้ , บริจาคโลหิต เป็นต้น`,
+      ogImage: 'https://res.cloudinary.com/dndcgytjh/image/upload/v1754464765/ole9r7h6sjm1jmyg5qsu.webp',
+      ogUrl: "https://theoldsiam.co.th/event/2025/fathers-day-activity",
+      twitterTitle: `5 ธันวาคมปีนี้ ให้ ดิโอลด์ สยาม พลาซ่า เป็นสื่อกลางแทนความรักและความรู้สึกอันแสนอบอุ่นที่คุณมีต่อคุณพ่อ`,
+      twitterDescription: `สร้างการ์ดวันพ่อสุดพิเศษตามสไตล์ของคุณเอง พร้อมข้อความอบอุ่น และแชร์ให้คนที่คุณรัก พร้อมกับกิจกรรมอื่นๆ อาทิเช่น workshop จัดดอกไม้ , บริจาคโลหิต เป็นต้น`,
+    };
+  }
   
   return {
     title: `${event.title} | The Old Siam Plaza`,
@@ -106,6 +122,13 @@ const url = Astro.url.pathname;
       </a>
     </div>
 
+
+    {componentType === 'FatherDayCardCreator' && (
+      <div class="space-y-8 h-full">
+         <div class="fixed inset-0 w-full min-h-screen bg-[url('../assets/activity_father/father_bg.webp')] bg-cover bg-center bg-no-repeat z-[-20] bg-fixed "/>
+        <FatherDayCardComponent client:load />
+      </div>
+    )}
     
     {componentType === 'MothersDayCardCreator' && (
 

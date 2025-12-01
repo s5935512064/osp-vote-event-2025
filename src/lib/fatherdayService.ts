@@ -43,7 +43,7 @@ export interface MothersDayCardEntity {
 
 export class MothersDayCardService {
   private static readonly WEBSITE_ID = "OSP";
-  private static readonly CAMPAIGN_ID = "cmicva1h3000jnw08top9ae7a";
+  private static readonly CAMPAIGN_ID = "cmicvn21f000rnw08vxcad2o8";
 
   // Submit Mother's Day Card
   static async submitCard(

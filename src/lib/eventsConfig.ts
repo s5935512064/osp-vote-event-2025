@@ -2,6 +2,23 @@ import type { Event } from "./types";
 
 export const events: Event[] = [
   {
+    id: "fathers-day-2025",
+    title: "วันพ่อแห่งชาติ 2568",
+    subtitle: "ร่วมแสดงความรักและความกตัญญูต่อคุณพ่อ กับ ดิ โอลด์ สยาม พลาซ่า",
+    description:
+      "5 ธันวาคมปีนี้ ให้ ดิโอลด์ สยาม พลาซ่า เป็นสื่อกลางแทนความรักและความรู้สึกอันแสนอบอุ่นที่คุณมีต่อคุณพ่อ",
+    href: "/event/2025/fathers-day-activity",
+    image:
+      "https://assets-manager.ssdapp.net/public/file/kxu8j5qhie633kw024n3b7tw",
+    status: "active",
+    startDate: "2025-11-26",
+    endDate: "2025-12-10",
+    tags: ["วันพ่อ", "ครอบครัว", "วัฒนธรรมไทย", "กิจกรรมพิเศษ", "fathersday"],
+    slug: "fathers-day-activity",
+    year: "2025",
+    isHot: true,
+  },
+  {
     id: "loy-krathong-thai-silk-2568",
     title: "ลอยกระทงผ้าไทยออนไลน์ 2568",
     subtitle:
@@ -25,7 +42,7 @@ export const events: Event[] = [
     ],
     slug: "loy-krathong-thai-silk",
     year: "2025",
-    isHot: true,
+    isHot: false,
   },
   {
     id: "mothers-day-event",

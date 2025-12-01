@@ -14,7 +14,12 @@ export async function GET() {
       <priority>0.8</priority>
     </url>
     <url>
-      <loc>https://theoldsiam.co.th/event/2025/mothers-day-activity</loc>
+      <loc>https://theoldsiam.co.th/event/mothers-day-activity</loc>
+      <changefreq>monthly</changefreq>
+      <priority>0.8</priority>
+    </url>
+    <url>
+      <loc>https://theoldsiam.co.th/event/fathers-day-activity</loc>
       <changefreq>monthly</changefreq>
       <priority>0.8</priority>
     </url>
